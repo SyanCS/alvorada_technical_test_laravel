@@ -27,12 +27,12 @@ return new class extends Migration
             $table->string('recommended_use', 100)->nullable();
 
             // Flexible features
-            $table->jsonb('amenities')->nullable();
+            $table->json('amenities')->nullable();
 
             // AI metadata
             $table->decimal('confidence_score', 3, 2)->nullable();
             $table->integer('source_notes_count')->nullable();
-            $table->jsonb('raw_ai_response')->nullable();
+            $table->json('raw_ai_response')->nullable();
             $table->timestamp('extracted_at')->nullable();
 
             $table->timestamps();

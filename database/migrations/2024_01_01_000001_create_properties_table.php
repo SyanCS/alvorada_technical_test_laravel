@@ -11,10 +11,10 @@ return new class extends Migration
         Schema::create('properties', function (Blueprint $table) {
             $table->id();
             $table->string('name', 255)->unique();
-            $table->string('address', 500)->unique();
+            $table->string('address', 255)->unique();
             $table->decimal('latitude', 10, 7);
             $table->decimal('longitude', 10, 7);
-            $table->jsonb('extra_field')->nullable();
+            $table->json('extra_field')->nullable();
             $table->timestamps();
         });
     }

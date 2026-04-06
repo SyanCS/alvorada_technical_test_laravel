@@ -1,0 +1,38 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/var/www/html
+      - /var/www/html/vendor
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - DB_CONNECTION=pgsql
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_DATABASE=alvorada_db
+      - DB_USERNAME=alvorada_user
+      - DB_PASSWORD=alvorada_password
+      - VITE_DEV_SERVER_URL=http://localhost:5173
+
+  postgres:
+    image: postgis/postgis:16-3.4
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: alvorada_db
+      POSTGRES_USER: alvorada_user
+      POSTGRES_PASSWORD: alvorada_password
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U alvorada_user -d alvorada_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
