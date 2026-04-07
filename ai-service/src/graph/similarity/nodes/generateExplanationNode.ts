@@ -23,6 +23,14 @@ export function createGenerateExplanationNode(llm: ChatOpenAI) {
 
   return async (state: SimilarityState): Promise<Partial<SimilarityState>> => {
     try {
+      // Guard: if a previous node errored, surface it instead of silently returning empty results
+      if (state.error) {
+        return {
+          similarProperties: [],
+          summary: `Could not find similar properties: ${state.error}`,
+        };
+      }
+
       const scored = state.scoredSimilarity ?? [];
       const limit = state.limit ?? 10;
       const top = scored.slice(0, limit);
