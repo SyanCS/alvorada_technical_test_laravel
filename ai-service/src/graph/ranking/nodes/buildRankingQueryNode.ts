@@ -26,6 +26,7 @@ export function createBuildRankingQueryNode() {
     const parts: string[] = [];
     if (filters["recommended_use"]) parts.push(`use: ${filters["recommended_use"]}`);
     if (filters["min_capacity"]) parts.push(`min capacity: ${filters["min_capacity"]}`);
+    if (filters["max_capacity"]) parts.push(`max capacity: ${filters["max_capacity"]}`);
     if (filters["min_condition"]) parts.push(`min condition: ${filters["min_condition"]}/5`);
     if (Object.keys(preferences).length > 0) {
       parts.push(`preferences: ${Object.keys(preferences).join(", ")}`);
