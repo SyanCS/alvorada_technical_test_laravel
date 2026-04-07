@@ -46,6 +46,7 @@ export const RankedCandidateSchema = z.object({
   match_count: z.number(),
   matched_fields: z.array(z.string()),
 });
+export type RankedCandidate = z.infer<typeof RankedCandidateSchema>;
 
 export const RankedCandidatesSchema = z.object({
   candidates: z.array(RankedCandidateSchema),
