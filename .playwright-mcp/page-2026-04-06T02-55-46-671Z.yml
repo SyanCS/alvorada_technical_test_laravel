@@ -1,0 +1,37 @@
+- generic [ref=e3]:
+  - navigation [ref=e4]:
+    - generic [ref=e6]:
+      - link "Alvorada" [ref=e7] [cursor=pointer]:
+        - /url: /
+        - img [ref=e9]
+        - generic [ref=e11]: Alvorada
+      - generic [ref=e12]:
+        - link "Properties" [ref=e13] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e14]:
+            - img [ref=e15]
+            - text: Properties
+        - link "Map" [ref=e17] [cursor=pointer]:
+          - /url: /map
+          - generic [ref=e18]:
+            - img [ref=e19]
+            - text: Map
+        - link "Scoring" [ref=e21] [cursor=pointer]:
+          - /url: /scoring
+          - generic [ref=e22]:
+            - img [ref=e23]
+            - text: Scoring
+  - main [ref=e25]:
+    - generic [ref=e26]:
+      - generic [ref=e27]:
+        - generic [ref=e28]:
+          - heading "Properties" [level=1] [ref=e29]
+          - paragraph [ref=e30]: 0 properties
+        - link "Add Property" [ref=e31] [cursor=pointer]:
+          - /url: /properties/create
+          - img [ref=e32]
+          - text: Add Property
+      - textbox "Search properties by name or address..." [ref=e35]
+      - generic [ref=e36]:
+        - paragraph [ref=e37]: Failed to retrieve properties
+        - button "Try again" [ref=e38]

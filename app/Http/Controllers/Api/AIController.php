@@ -7,14 +7,16 @@ use App\Http\Requests\ScorePropertiesRequest;
 use App\Models\PropertyFeature;
 use App\Services\FeatureExtractionService;
 use App\Services\PropertyScoringService;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Exception;
 
 class AIController extends Controller
 {
     private FeatureExtractionService $featureExtractionService;
+
     private PropertyScoringService $scoringService;
 
     public function __construct(
@@ -52,7 +54,7 @@ class AIController extends Controller
                 'message' => 'Features extracted successfully',
             ]);
         } catch (Exception $e) {
-            Log::error('Feature extraction error: ' . $e->getMessage());
+            Log::error('Feature extraction error: '.$e->getMessage());
 
             $status = str_contains($e->getMessage(), 'not found') ? 404 : 500;
 
@@ -74,6 +76,31 @@ class AIController extends Controller
             $requirements = trim($request->requirements);
             $limit = $request->limit ? (int) $request->limit : null;
 
+            $serviceUrl = config('ai.service_url');
+            if (! empty($serviceUrl)) {
+                $url = rtrim((string) $serviceUrl, '/').'/search';
+                try {
+                    $response = Http::timeout(180)
+                        ->acceptJson()
+                        ->asJson()
+                        ->post($url, [
+                            'requirements' => $requirements,
+                            'limit' => $limit ?? 10,
+                        ]);
+
+                    if ($response->successful()) {
+                        return response()->json($response->json());
+                    }
+
+                    Log::warning('AI service scoring failed, falling back to PHP', [
+                        'status' => $response->status(),
+                        'body' => $response->body(),
+                    ]);
+                } catch (Exception $httpEx) {
+                    Log::warning('AI service unreachable, falling back to PHP: '.$httpEx->getMessage());
+                }
+            }
+
             $result = $this->scoringService->scoreAllProperties($requirements, $limit);
 
             return response()->json([
@@ -81,7 +108,7 @@ class AIController extends Controller
                 'message' => 'Properties scored successfully',
             ]);
         } catch (Exception $e) {
-            Log::error('Property scoring error: ' . $e->getMessage());
+            Log::error('Property scoring error: '.$e->getMessage());
 
             return response()->json([
                 'data' => null,
@@ -99,7 +126,7 @@ class AIController extends Controller
         try {
             $features = PropertyFeature::where('property_id', $id)->first();
 
-            if (!$features) {
+            if (! $features) {
                 return response()->json([
                     'data' => [
                         'property_id' => $id,
@@ -120,7 +147,7 @@ class AIController extends Controller
                 'message' => 'Features retrieved successfully',
             ]);
         } catch (Exception $e) {
-            Log::error('Get features error: ' . $e->getMessage());
+            Log::error('Get features error: '.$e->getMessage());
 
             return response()->json([
                 'data' => null,

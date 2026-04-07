@@ -1,13 +1,14 @@
 <?php
 
-use App\Http\Controllers\Api\PropertyController;
-use App\Http\Controllers\Api\NoteController;
 use App\Http\Controllers\Api\AIController;
+use App\Http\Controllers\Api\NoteController;
+use App\Http\Controllers\Api\PropertyController;
 use Illuminate\Support\Facades\Route;
 
 // Properties
 Route::get('/properties', [PropertyController::class, 'index']);
 Route::post('/properties', [PropertyController::class, 'store']);
+Route::post('/properties/search', [PropertyController::class, 'search']);
 Route::get('/properties/{id}', [PropertyController::class, 'show']);
 
 // Notes

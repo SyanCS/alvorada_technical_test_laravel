@@ -19,7 +19,7 @@ export const usePropertyStore = defineStore('property', () => {
         error.value = null;
         try {
             const { data } = await api.get('/properties');
-            properties.value = data.data ?? data;
+            properties.value = (data.data ?? data).map(normalizeProperty);
         } catch (err) {
             error.value = err.response?.data?.message || err.message;
         } finally {
@@ -27,12 +27,19 @@ export const usePropertyStore = defineStore('property', () => {
         }
     }
 
+    function normalizeProperty(p) {
+        if (p && p.property_feature && !p.features) {
+            p.features = p.property_feature;
+        }
+        return p;
+    }
+
     async function fetchProperty(id) {
         loadingOne.value = true;
         error.value = null;
         try {
             const { data } = await api.get(`/properties/${id}`);
-            currentProperty.value = data.data ?? data;
+            currentProperty.value = normalizeProperty(data.data ?? data);
             return currentProperty.value;
         } catch (err) {
             error.value = err.response?.data?.message || err.message;
@@ -47,7 +54,7 @@ export const usePropertyStore = defineStore('property', () => {
         error.value = null;
         try {
             const { data } = await api.post('/properties', payload);
-            const created = data.data ?? data;
+            const created = normalizeProperty(data.data ?? data);
             properties.value.unshift(created);
             return created;
         } catch (err) {

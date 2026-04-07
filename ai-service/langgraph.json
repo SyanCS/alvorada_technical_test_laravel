@@ -1,0 +1,7 @@
+{
+  "node_version": "20",
+  "graphs": {
+    "property_search": "./src/graph/factory.ts:graph"
+  },
+  "env": ".env"
+}

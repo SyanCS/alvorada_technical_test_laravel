@@ -17,6 +17,23 @@ services:
       - DB_USERNAME=alvorada_user
       - DB_PASSWORD=alvorada_password
       - VITE_DEV_SERVER_URL=http://localhost:5173
+      - AI_SERVICE_URL=http://ai-service:3001
+      - LLM_API_KEY=${LLM_API_KEY:-}
+
+  ai-service:
+    build:
+      context: ./ai-service
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - LARAVEL_API_URL=http://app:8000/api
+      - OPENROUTER_API_KEY=${LLM_API_KEY:-}
+      - LLM_MODEL=${LLM_MODEL:-google/gemini-2.0-flash-001}
+    depends_on:
+      app:
+        condition: service_started
 
   postgres:
     image: postgis/postgis:16-3.4

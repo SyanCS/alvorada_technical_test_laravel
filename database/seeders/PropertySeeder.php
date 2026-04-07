@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use App\Models\Note;
 use App\Models\Property;
+use App\Models\PropertyFeature;
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 
 class PropertySeeder extends Seeder
@@ -12,12 +14,13 @@ class PropertySeeder extends Seeder
     {
         $properties = $this->getProperties();
         $brokerNotes = $this->getBrokerNotes();
+        $featurePresets = $this->getFeaturePresets();
 
-        $this->command->info("Seeding " . count($properties) . " properties...");
+        $this->command->info('Seeding '.count($properties).' properties...');
         $bar = $this->command->getOutput()->createProgressBar(count($properties));
         $bar->start();
 
-        foreach ($properties as $entry) {
+        foreach ($properties as $i => $entry) {
             $property = Property::create([
                 'name' => $entry['name'],
                 'address' => $entry['address'],
@@ -32,7 +35,7 @@ class PropertySeeder extends Seeder
 
             $noteCount = rand(1, 4);
             $selectedNotes = array_rand(array_flip($brokerNotes), $noteCount);
-            if (!is_array($selectedNotes)) {
+            if (! is_array($selectedNotes)) {
                 $selectedNotes = [$selectedNotes];
             }
 
@@ -43,12 +46,56 @@ class PropertySeeder extends Seeder
                 ]);
             }
 
+            $preset = $featurePresets[$i % count($featurePresets)];
+            PropertyFeature::create([
+                'property_id' => $property->id,
+                'near_subway' => $preset['near_subway'],
+                'needs_renovation' => $preset['needs_renovation'],
+                'parking_available' => $preset['parking_available'],
+                'has_elevator' => $preset['has_elevator'],
+                'estimated_capacity_people' => $preset['estimated_capacity_people'],
+                'floor_level' => $preset['floor_level'],
+                'condition_rating' => $preset['condition_rating'],
+                'recommended_use' => $preset['recommended_use'],
+                'amenities' => $preset['amenities'],
+                'confidence_score' => $preset['confidence_score'],
+                'source_notes_count' => $noteCount,
+                'raw_ai_response' => ['model' => 'gpt-4o', 'prompt_version' => 'v2'],
+                'extracted_at' => Carbon::now()->subDays(rand(0, 30)),
+            ]);
+
             $bar->advance();
         }
 
         $bar->finish();
         $this->command->newLine();
-        $this->command->info("Done! Created " . count($properties) . " properties.");
+        $this->command->info('Done! Created '.count($properties).' properties.');
+    }
+
+    private function getFeaturePresets(): array
+    {
+        return [
+            ['near_subway' => true,  'needs_renovation' => false, 'parking_available' => false, 'has_elevator' => true,  'estimated_capacity_people' => 350, 'floor_level' => 22, 'condition_rating' => 5, 'recommended_use' => 'office',     'amenities' => ['lobby', 'security', 'conference-rooms', 'gym'],           'confidence_score' => 0.95],
+            ['near_subway' => true,  'needs_renovation' => true,  'parking_available' => false, 'has_elevator' => true,  'estimated_capacity_people' => 120, 'floor_level' => 8,  'condition_rating' => 2, 'recommended_use' => 'retail',     'amenities' => ['lobby', 'loading-dock'],                                   'confidence_score' => 0.82],
+            ['near_subway' => false, 'needs_renovation' => false, 'parking_available' => true,  'has_elevator' => false, 'estimated_capacity_people' => 50,  'floor_level' => 1,  'condition_rating' => 4, 'recommended_use' => 'restaurant', 'amenities' => ['courtyard', 'ev-charging'],                                'confidence_score' => 0.91],
+            ['near_subway' => false, 'needs_renovation' => false, 'parking_available' => true,  'has_elevator' => false, 'estimated_capacity_people' => 200, 'floor_level' => 1,  'condition_rating' => 3, 'recommended_use' => 'warehouse',  'amenities' => ['loading-dock', 'security'],                                'confidence_score' => 0.88],
+            ['near_subway' => true,  'needs_renovation' => false, 'parking_available' => true,  'has_elevator' => true,  'estimated_capacity_people' => 500, 'floor_level' => 15, 'condition_rating' => 5, 'recommended_use' => 'office',     'amenities' => ['lobby', 'security', 'gym', 'rooftop', 'conference-rooms'], 'confidence_score' => 0.97],
+            ['near_subway' => false, 'needs_renovation' => true,  'parking_available' => true,  'has_elevator' => false, 'estimated_capacity_people' => 30,  'floor_level' => 2,  'condition_rating' => 2, 'recommended_use' => 'retail',     'amenities' => ['bike-storage'],                                            'confidence_score' => 0.74],
+            ['near_subway' => true,  'needs_renovation' => false, 'parking_available' => false, 'has_elevator' => true,  'estimated_capacity_people' => 80,  'floor_level' => 5,  'condition_rating' => 4, 'recommended_use' => 'medical',    'amenities' => ['lobby', 'security', 'ev-charging'],                        'confidence_score' => 0.89],
+            ['near_subway' => false, 'needs_renovation' => false, 'parking_available' => true,  'has_elevator' => true,  'estimated_capacity_people' => 250, 'floor_level' => 10, 'condition_rating' => 4, 'recommended_use' => 'mixed-use',  'amenities' => ['lobby', 'rooftop', 'co-working', 'bike-storage'],          'confidence_score' => 0.93],
+            ['near_subway' => true,  'needs_renovation' => true,  'parking_available' => false, 'has_elevator' => false, 'estimated_capacity_people' => 40,  'floor_level' => 3,  'condition_rating' => 1, 'recommended_use' => 'studio',     'amenities' => ['courtyard'],                                               'confidence_score' => 0.68],
+            ['near_subway' => false, 'needs_renovation' => false, 'parking_available' => true,  'has_elevator' => false, 'estimated_capacity_people' => 150, 'floor_level' => 1,  'condition_rating' => 3, 'recommended_use' => 'retail',     'amenities' => ['loading-dock', 'ev-charging', 'security'],                 'confidence_score' => 0.85],
+            ['near_subway' => true,  'needs_renovation' => false, 'parking_available' => true,  'has_elevator' => true,  'estimated_capacity_people' => 400, 'floor_level' => 18, 'condition_rating' => 5, 'recommended_use' => 'tech',       'amenities' => ['lobby', 'gym', 'rooftop', 'co-working', 'bike-storage'],   'confidence_score' => 0.96],
+            ['near_subway' => false, 'needs_renovation' => true,  'parking_available' => false, 'has_elevator' => false, 'estimated_capacity_people' => 20,  'floor_level' => 1,  'condition_rating' => 2, 'recommended_use' => 'restaurant', 'amenities' => ['courtyard'],                                               'confidence_score' => 0.71],
+            ['near_subway' => false, 'needs_renovation' => false, 'parking_available' => true,  'has_elevator' => true,  'estimated_capacity_people' => 300, 'floor_level' => 12, 'condition_rating' => 4, 'recommended_use' => 'office',     'amenities' => ['lobby', 'security', 'conference-rooms', 'ev-charging'],    'confidence_score' => 0.92],
+            ['near_subway' => true,  'needs_renovation' => false, 'parking_available' => false, 'has_elevator' => true,  'estimated_capacity_people' => 60,  'floor_level' => 6,  'condition_rating' => 3, 'recommended_use' => 'residential', 'amenities' => ['lobby', 'gym', 'bike-storage'],                            'confidence_score' => 0.84],
+            ['near_subway' => false, 'needs_renovation' => false, 'parking_available' => true,  'has_elevator' => false, 'estimated_capacity_people' => 100, 'floor_level' => 1,  'condition_rating' => 4, 'recommended_use' => 'retail',     'amenities' => ['loading-dock', 'security', 'ev-charging'],                 'confidence_score' => 0.90],
+            ['near_subway' => true,  'needs_renovation' => false, 'parking_available' => true,  'has_elevator' => true,  'estimated_capacity_people' => 180, 'floor_level' => 9,  'condition_rating' => 5, 'recommended_use' => 'medical',    'amenities' => ['lobby', 'security', 'conference-rooms'],                   'confidence_score' => 0.94],
+            ['near_subway' => false, 'needs_renovation' => true,  'parking_available' => true,  'has_elevator' => false, 'estimated_capacity_people' => 75,  'floor_level' => 2,  'condition_rating' => 1, 'recommended_use' => 'warehouse',  'amenities' => ['loading-dock'],                                            'confidence_score' => 0.66],
+            ['near_subway' => true,  'needs_renovation' => false, 'parking_available' => false, 'has_elevator' => true,  'estimated_capacity_people' => 220, 'floor_level' => 14, 'condition_rating' => 4, 'recommended_use' => 'tech',       'amenities' => ['lobby', 'co-working', 'rooftop', 'gym'],                   'confidence_score' => 0.91],
+            ['near_subway' => false, 'needs_renovation' => false, 'parking_available' => true,  'has_elevator' => false, 'estimated_capacity_people' => 45,  'floor_level' => 1,  'condition_rating' => 3, 'recommended_use' => 'studio',     'amenities' => ['courtyard', 'bike-storage'],                               'confidence_score' => 0.79],
+            ['near_subway' => true,  'needs_renovation' => false, 'parking_available' => true,  'has_elevator' => true,  'estimated_capacity_people' => 450, 'floor_level' => 25, 'condition_rating' => 5, 'recommended_use' => 'mixed-use',  'amenities' => ['lobby', 'security', 'gym', 'rooftop', 'ev-charging'],      'confidence_score' => 0.98],
+        ];
     }
 
     private function getBrokerNotes(): array
