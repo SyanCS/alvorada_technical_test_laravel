@@ -118,6 +118,61 @@ class AIController extends Controller
     }
 
     /**
+     * Find properties similar to a given property via GraphRAG.
+     * POST /api/ai/similar
+     * Body: { "property_id": 1, "limit": 10 }
+     */
+    public function similar(Request $request): JsonResponse
+    {
+        $request->validate([
+            'property_id' => 'required|integer|min:1',
+            'limit' => 'nullable|integer|min:1|max:50',
+        ]);
+
+        $propertyId = (int) $request->property_id;
+        $limit = $request->limit ? (int) $request->limit : 10;
+
+        $serviceUrl = config('ai.service_url');
+        if (empty($serviceUrl)) {
+            return response()->json([
+                'data' => null,
+                'message' => 'AI service URL not configured. Set AI_SERVICE_URL in .env.',
+            ], 503);
+        }
+
+        try {
+            $url = rtrim((string) $serviceUrl, '/') . '/similar';
+            $response = Http::timeout(60)
+                ->acceptJson()
+                ->asJson()
+                ->post($url, [
+                    'property_id' => $propertyId,
+                    'limit' => $limit,
+                ]);
+
+            if ($response->successful()) {
+                return response()->json($response->json());
+            }
+
+            Log::warning('AI service /similar failed', [
+                'status' => $response->status(),
+                'body' => $response->body(),
+            ]);
+
+            return response()->json([
+                'data' => null,
+                'message' => 'AI service returned an error: ' . $response->status(),
+            ], 503);
+        } catch (Exception $e) {
+            Log::error('AI similar error: ' . $e->getMessage());
+            return response()->json([
+                'data' => null,
+                'message' => 'AI service unreachable: ' . $e->getMessage(),
+            ], 503);
+        }
+    }
+
+    /**
      * Get extracted features for a property.
      * GET /api/properties/{id}/features
      */

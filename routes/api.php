@@ -19,6 +19,7 @@ Route::post('/notes', [NoteController::class, 'store']);
 // AI endpoints
 Route::post('/ai/extract-features', [AIController::class, 'extractFeatures']);
 Route::post('/ai/score', [AIController::class, 'scoreProperties']);
+Route::post('/ai/similar', [AIController::class, 'similar']);
 
 // Property features
 Route::get('/properties/{id}/features', [AIController::class, 'getPropertyFeatures']);
