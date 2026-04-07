@@ -3,7 +3,7 @@
  */
 import "../envBootstrap.js";
 import { createLlm } from "../services/llm.js";
-import { buildPropertySearchGraph } from "./graph.js";
+import { buildRankingGraph } from "./ranking/graph.js";
 
 const llm = createLlm();
-export const graph = buildPropertySearchGraph(llm);
+export const graph = buildRankingGraph(llm);
