@@ -106,6 +106,24 @@ export const usePropertyStore = defineStore('property', () => {
         return features;
     }
 
+    const similarProperties = ref([]);
+    const loadingSimilar = ref(false);
+
+    async function findSimilar(propertyId, limit = 5) {
+        loadingSimilar.value = true;
+        similarProperties.value = [];
+        try {
+            const { data } = await api.post('/ai/similar', { property_id: propertyId, limit });
+            similarProperties.value = data.data?.similar_properties ?? [];
+            return data.data;
+        } catch (err) {
+            error.value = err.response?.data?.message || err.message;
+            throw err;
+        } finally {
+            loadingSimilar.value = false;
+        }
+    }
+
     return {
         properties,
         currentProperty,
@@ -120,5 +138,8 @@ export const usePropertyStore = defineStore('property', () => {
         fetchNotes,
         extractFeatures,
         fetchFeatures,
+        similarProperties,
+        loadingSimilar,
+        findSimilar,
     };
 });

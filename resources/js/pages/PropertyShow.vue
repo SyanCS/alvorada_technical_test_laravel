@@ -92,6 +92,67 @@
         </div>
 
       </Transition>
+
+      <!-- Similar Properties -->
+      <div class="mt-8">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Similar Properties</h2>
+          <button
+            @click="loadSimilar"
+            :disabled="store.loadingSimilar"
+            class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {{ store.loadingSimilar ? 'Finding...' : 'Find Similar' }}
+          </button>
+        </div>
+
+        <p v-if="similarSummary" class="mb-4 text-sm text-gray-600 dark:text-gray-400 italic">
+          {{ similarSummary }}
+        </p>
+
+        <div v-if="store.similarProperties.length > 0" class="space-y-3">
+          <div
+            v-for="prop in store.similarProperties"
+            :key="prop.property_id"
+            class="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-indigo-300 transition-colors"
+          >
+            <div class="flex items-start justify-between">
+              <div class="flex-1 min-w-0">
+                <router-link
+                  :to="`/properties/${prop.property_id}`"
+                  class="font-medium text-indigo-600 dark:text-indigo-400 hover:underline truncate block"
+                >
+                  {{ prop.property_name }}
+                </router-link>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{{ prop.address }}</p>
+                <p class="text-sm text-gray-700 dark:text-gray-300 mt-2">{{ prop.explanation }}</p>
+                <div v-if="prop.shared_concepts.length" class="flex flex-wrap gap-1 mt-2">
+                  <span
+                    v-for="concept in prop.shared_concepts"
+                    :key="concept"
+                    class="px-2 py-0.5 text-xs bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-full"
+                  >
+                    {{ concept }}
+                  </span>
+                </div>
+              </div>
+              <div class="ml-4 flex-shrink-0 text-center">
+                <div class="text-2xl font-bold" :class="scoreColor(prop.similarity_score)">
+                  {{ prop.similarity_score }}%
+                </div>
+                <div class="text-xs text-gray-400">similar</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p
+          v-else-if="!store.loadingSimilar && similarSearched"
+          class="text-sm text-gray-500 dark:text-gray-400"
+        >
+          No similar properties found. Try running <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded">npm run extract-entities</code> in the ai-service to populate the knowledge graph.
+        </p>
+      </div>
     </template>
   </div>
 </template>
@@ -161,6 +222,24 @@ function onFeaturesExtracted(features) {
   if (property.value) property.value.features = features;
 }
 
+const similarSummary = ref('');
+const similarSearched = ref(false);
+
+async function loadSimilar() {
+  try {
+    const result = await store.findSimilar(property.value.id, 5);
+    similarSummary.value = result?.summary ?? '';
+    similarSearched.value = true;
+  } catch {
+    similarSearched.value = true;
+  }
+}
+
+function scoreColor(score) {
+  if (score >= 75) return 'text-green-600 dark:text-green-400';
+  if (score >= 50) return 'text-yellow-600 dark:text-yellow-400';
+  return 'text-gray-500 dark:text-gray-400';
+}
 
 onMounted(loadProperty);
 
