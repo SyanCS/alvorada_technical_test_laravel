@@ -7,7 +7,7 @@
     "start": "node --import tsx src/index.ts",
     "dev": "node --watch --import tsx src/index.ts",
     "typecheck": "tsc --noEmit",
-    "sync-graph": "node --import tsx --env-file .env scripts/sync-graph.ts"
+    "extract-entities": "node --import tsx --env-file .env scripts/extract-entities.ts"
   },
   "dependencies": {
     "@langchain/core": "^0.3.72",
