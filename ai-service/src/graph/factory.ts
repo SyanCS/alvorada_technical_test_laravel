@@ -1,6 +1,7 @@
 /**
  * Entry for LangGraph CLI / Studio: `npx @langchain/langgraph-cli dev`
  */
+import "../envBootstrap.js";
 import { createLlm } from "../services/llm.js";
 import { buildPropertySearchGraph } from "./graph.js";
 

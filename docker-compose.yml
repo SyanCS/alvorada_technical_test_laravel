@@ -29,11 +29,30 @@ services:
     environment:
       - PORT=3001
       - LARAVEL_API_URL=http://app:8000/api
+      - LLM_API_KEY=${LLM_API_KEY:-}
       - OPENROUTER_API_KEY=${LLM_API_KEY:-}
       - LLM_MODEL=${LLM_MODEL:-google/gemini-2.0-flash-001}
+      - LANGSMITH_API_KEY=${LANGSMITH_API_KEY:-}
+      - LANGCHAIN_TRACING_V2=${LANGCHAIN_TRACING_V2:-false}
+      - LANGCHAIN_PROJECT=${LANGCHAIN_PROJECT:-alvorada-property-research}
+      - NEO4J_URI=bolt://neo4j:7687
+      - NEO4J_USER=neo4j
+      - NEO4J_PASSWORD=${NEO4J_PASSWORD:-neo4j-secret}
     depends_on:
       app:
         condition: service_started
+      neo4j:
+        condition: service_started
+
+  neo4j:
+    image: neo4j:5-community
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      NEO4J_AUTH: neo4j/${NEO4J_PASSWORD:-neo4j-secret}
+    volumes:
+      - neo4jdata:/data
 
   postgres:
     image: postgis/postgis:16-3.4
@@ -53,3 +72,4 @@ services:
 
 volumes:
   pgdata:
+  neo4jdata:

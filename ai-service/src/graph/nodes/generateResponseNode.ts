@@ -29,7 +29,13 @@ export function createGenerateResponseNode(llm: ChatOpenAI) {
       if (state.error?.startsWith("scoreCandidates")) {
         return {
           answer: `Scoring step failed: ${state.error}`,
-          followUpQuestions: ["Retry with fewer properties or check OPENROUTER_API_KEY."],
+          followUpQuestions: ["Retry with fewer properties or check LLM_API_KEY / OPENROUTER_API_KEY for OpenRouter."],
+        };
+      }
+      if (state.error?.startsWith("cypherGenerator")) {
+        return {
+          answer: `Could not build graph query: ${state.error}`,
+          followUpQuestions: ["Check OPENROUTER_API_KEY and try again."],
         };
       }
       const scored = state.scoredProperties ?? [];

@@ -3,7 +3,7 @@ import { config } from "../config.js";
 
 export function createLlm(temperature = 0.2): ChatOpenAI {
   if (!config.openRouterApiKey) {
-    throw new Error("OPENROUTER_API_KEY is not set");
+    throw new Error("Set LLM_API_KEY or OPENROUTER_API_KEY for OpenRouter (not LangSmith)");
   }
   return new ChatOpenAI({
     apiKey: config.openRouterApiKey,

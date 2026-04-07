@@ -1,3 +1,4 @@
+import "./envBootstrap.js";
 import { startServer } from "./server.js";
 
 startServer().catch((err) => {

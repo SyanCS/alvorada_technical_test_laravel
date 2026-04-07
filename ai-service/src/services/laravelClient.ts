@@ -33,3 +33,21 @@ export async function searchProperties(
   const count = json.data?.count ?? properties.length;
   return { properties, count };
 }
+
+export async function fetchPropertiesByIds(ids: number[]): Promise<unknown[]> {
+  if (ids.length === 0) return [];
+  const url = `${config.laravelApiUrl}/properties/by-ids`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify({ ids }),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Laravel POST /properties/by-ids failed: ${res.status} ${text}`);
+  }
+  const json = (await res.json()) as {
+    data?: { properties?: unknown[] };
+  };
+  return json.data?.properties ?? [];
+}

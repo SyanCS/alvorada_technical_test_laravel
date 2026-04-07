@@ -6,13 +6,15 @@
   "scripts": {
     "start": "node --import tsx src/index.ts",
     "dev": "node --watch --import tsx src/index.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "sync-graph": "node --import tsx --env-file .env scripts/sync-graph.ts"
   },
   "dependencies": {
     "@langchain/core": "^0.3.72",
     "@langchain/langgraph": "^0.2.74",
     "@langchain/openai": "^0.3.17",
     "fastify": "^5.7.4",
+    "neo4j-driver": "^5.28.3",
     "tsx": "^4.19.2",
     "zod": "^3.24.1"
   },

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PropertiesByIdsRequest;
 use App\Http\Requests\SearchPropertiesRequest;
 use App\Http\Requests\StorePropertyRequest;
 use App\Models\Property;
@@ -121,8 +122,6 @@ class PropertyController extends Controller
                 ->with('propertyFeature')
                 ->whereHas('propertyFeature');
 
-            $pf = 'property_features';
-
             if (! empty($criteria['recommended_use'])) {
                 $use = $criteria['recommended_use'];
                 $query->whereHas('propertyFeature', function ($q) use ($use) {
@@ -182,6 +181,40 @@ class PropertyController extends Controller
             return response()->json([
                 'data' => null,
                 'message' => 'Failed to search properties',
+            ], 500);
+        }
+    }
+
+    /**
+     * Batch load properties with notes and features (for Graph RAG hydrate).
+     * POST /api/properties/by-ids
+     */
+    public function byIds(PropertiesByIdsRequest $request): JsonResponse
+    {
+        try {
+            $ids = array_map('intval', $request->input('ids', []));
+            $rows = Property::with(['notes', 'propertyFeature'])
+                ->whereIn('id', $ids)
+                ->get()
+                ->keyBy('id');
+            $ordered = collect($ids)
+                ->map(fn (int $id) => $rows->get($id))
+                ->filter()
+                ->values();
+
+            return response()->json([
+                'data' => [
+                    'properties' => $ordered,
+                    'count' => $ordered->count(),
+                ],
+                'message' => 'Properties retrieved successfully',
+            ]);
+        } catch (Exception $e) {
+            Log::error('PropertyController::byIds Error: '.$e->getMessage());
+
+            return response()->json([
+                'data' => null,
+                'message' => 'Failed to load properties',
             ], 500);
         }
     }
