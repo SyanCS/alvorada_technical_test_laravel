@@ -1,38 +1,35 @@
 import { eq } from "drizzle-orm";
+import { HumanMessage, SystemMessage } from "@langchain/core/messages";
+import { z } from "zod";
 import { db, schema } from "../db/index.js";
-import { extractStructuredData } from "./openrouter.js";
-import { config } from "../config.js";
+import { createLlm } from "./llm.js";
 
-const SYSTEM_PROMPT = `## ROLE
-You are an expert commercial real estate analyst with deep expertise in property evaluation, feature analysis, and market assessment. You specialize in extracting structured insights from unstructured property research notes.
+const FeatureSchema = z.object({
+  near_subway: z.boolean().nullable(),
+  needs_renovation: z.boolean().nullable(),
+  parking_available: z.boolean().nullable(),
+  has_elevator: z.boolean().nullable(),
+  estimated_capacity_people: z.number().nullable(),
+  floor_level: z.number().nullable(),
+  condition_rating: z.number().min(1).max(5).nullable(),
+  recommended_use: z.string().nullable(),
+  amenities: z.array(z.string()).nullable(),
+  confidence_score: z.number().min(0).max(1),
+  summary: z.string(),
+});
 
-## TASK
-Analyze the provided property research notes and extract structured information about key property features, amenities, and characteristics. Your goal is to transform unstructured observations into standardized, actionable data that can be used for property scoring and comparison.
+const SYSTEM_PROMPT = `You are an expert commercial real estate analyst. Analyze property research notes and extract structured features.
 
-## OUTPUT FORMAT
-Return a valid JSON object with the following structure (no additional text or markdown):
-
-{
-  "near_subway": boolean or null,
-  "needs_renovation": boolean or null,
-  "parking_available": boolean or null,
-  "has_elevator": boolean or null,
-  "estimated_capacity_people": integer or null,
-  "floor_level": integer or null,
-  "condition_rating": integer or null,
-  "recommended_use": string or null,
-  "amenities": array or null,
-  "confidence_score": float,
-  "summary": string
-}
-
-## CONSTRAINTS
-1. Evidence-based extraction: Only set a field if there is clear, explicit evidence in the notes
-2. Use null for missing data: If information is uncertain, ambiguous, or not mentioned, use null
-3. Conservative boolean logic: Only set true/false when explicitly stated or strongly implied
-4. No assumptions: Don't infer information that isn't present in the notes
-5. JSON only: Return pure JSON without markdown formatting, explanations, or additional text
-6. Reasonable ranges: Ensure numeric values are realistic (e.g., capacity 1-1000, floors 0-100, rating 1-5)`;
+Rules:
+- Only set a field if there is clear evidence in the notes
+- Use null for missing or uncertain data
+- Only set booleans when explicitly stated or strongly implied
+- near_subway: within 5-10 min walk to subway/metro/transit
+- condition_rating: 1=poor, 2=fair, 3=good/move-in ready, 4=very good, 5=excellent
+- recommended_use: office, retail, warehouse, logistics, mixed, restaurant, medical, industrial, etc.
+- amenities: list of features mentioned (kitchen, conference room, gym, security, etc.)
+- confidence_score: 0.0-1.0 based on clarity of notes (detailed=0.8-1.0, vague=0.3-0.6, minimal=0.1-0.3)
+- summary: concise 2-3 sentence overview`;
 
 export async function extractFeaturesFromProperty(propertyId: number, forceRefresh = false) {
   const property = await db.query.properties.findFirst({
@@ -56,19 +53,36 @@ export async function extractFeaturesFromProperty(propertyId: number, forceRefre
     throw new Error("No notes found for property. Add some notes before extracting features.");
   }
 
-  if (!config.openRouterApiKey) {
-    throw new Error("LLM API key is not configured. Please add LLM_API_KEY to your .env file.");
-  }
-
   const notesText = propertyNotes.map((n, i) => `Note ${i + 1}: ${n.note}`).join("\n");
-  const userPrompt = `Property Information:\n- Name: ${property.name}\n- Address: ${property.address}\n- Total Notes: ${propertyNotes.length}\n\nResearch Notes:\n${notesText}\n\nPlease analyze these notes and extract structured features in JSON format.`;
+  const userPrompt = `Property: ${property.name}\nAddress: ${property.address}\nTotal Notes: ${propertyNotes.length}\n\n${notesText}`;
 
-  const { data } = await extractStructuredData(SYSTEM_PROMPT, userPrompt, { temperature: 0.3, maxTokens: 800 });
+  const llm = createLlm(0.3);
+  const structured = llm.withStructuredOutput(FeatureSchema);
 
-  const parsed = Array.isArray(data) ? data[0] : data;
+  const result = await structured.invoke([
+    new SystemMessage(SYSTEM_PROMPT),
+    new HumanMessage(userPrompt),
+  ]);
 
-  const featureData = buildFeatureData(parsed, propertyId, propertyNotes.length);
+  // Map Zod-validated result to Drizzle insert shape
+  const featureData: typeof schema.propertyFeatures.$inferInsert = {
+    propertyId,
+    nearSubway: result.near_subway,
+    needsRenovation: result.needs_renovation,
+    parkingAvailable: result.parking_available,
+    hasElevator: result.has_elevator,
+    estimatedCapacityPeople: result.estimated_capacity_people,
+    floorLevel: result.floor_level,
+    conditionRating: result.condition_rating,
+    recommendedUse: result.recommended_use,
+    amenities: result.amenities,
+    confidenceScore: String(result.confidence_score),
+    sourceNotesCount: propertyNotes.length,
+    rawAiResponse: result,
+    extractedAt: new Date(),
+  };
 
+  // Upsert
   const existing = await db.query.propertyFeatures.findFirst({
     where: eq(schema.propertyFeatures.propertyId, propertyId),
   });
@@ -84,37 +98,6 @@ export async function extractFeaturesFromProperty(propertyId: number, forceRefre
   return db.query.propertyFeatures.findFirst({
     where: eq(schema.propertyFeatures.propertyId, propertyId),
   });
-}
-
-type FeatureInsert = typeof schema.propertyFeatures.$inferInsert;
-
-function buildFeatureData(data: Record<string, unknown>, propertyId: number, notesCount: number): FeatureInsert {
-  const result: FeatureInsert = {
-    propertyId,
-    sourceNotesCount: notesCount,
-    extractedAt: new Date(),
-    rawAiResponse: data,
-  };
-
-  if (typeof data.near_subway === "boolean") result.nearSubway = data.near_subway;
-  if (typeof data.needs_renovation === "boolean") result.needsRenovation = data.needs_renovation;
-  if (typeof data.parking_available === "boolean") result.parkingAvailable = data.parking_available;
-  if (typeof data.has_elevator === "boolean") result.hasElevator = data.has_elevator;
-
-  if (typeof data.estimated_capacity_people === "number") result.estimatedCapacityPeople = data.estimated_capacity_people;
-  if (typeof data.floor_level === "number") result.floorLevel = data.floor_level;
-  if (typeof data.condition_rating === "number") {
-    const r = data.condition_rating as number;
-    if (r >= 1 && r <= 5) result.conditionRating = r;
-  }
-
-  if (typeof data.recommended_use === "string") result.recommendedUse = data.recommended_use;
-  if (Array.isArray(data.amenities)) result.amenities = data.amenities as string[];
-  if (typeof data.confidence_score === "number") {
-    result.confidenceScore = String(Math.min(1, Math.max(0, data.confidence_score)));
-  }
-
-  return result;
 }
 
 export function getFeatureSummary(feature: typeof schema.propertyFeatures.$inferSelect): string[] {
