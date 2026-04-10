@@ -6,9 +6,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Alvorada Property Research System** — a full-stack real estate research and AI-powered property matching platform:
 
-- **Laravel 13 backend** (PHP 8.3+) — REST API, Eloquent ORM, PostgreSQL/PostGIS
+- **Fastify backend** (TypeScript) — REST API, Drizzle ORM, PostgreSQL
 - **Vue 3 + Vite SPA** — Pinia stores, Vue Router, Tailwind CSS 4, Leaflet maps
-- **AI Service** (Node.js/TypeScript) — LangGraph agentic workflow, Fastify server
+- **LangGraph** — Agentic workflow for property ranking and similarity search
 - **Databases** — PostgreSQL 16 with PostGIS 3.4 (primary), Neo4j 5 (optional knowledge graph)
 - **LLM** — OpenRouter API (default: `google/gemini-2.0-flash-001`)
 
@@ -17,59 +17,43 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Running the full stack
 
 ```bash
-docker compose up          # Start all services (Laravel :8000, AI :3001, Postgres :5432, Neo4j :7474)
+docker compose up          # Start all services (Fastify :3000, Postgres :5432, Neo4j :7474)
 docker compose down
 ```
 
 Before first run, copy `.env.example` to `.env` and set `LLM_API_KEY` (OpenRouter key).
 
-### Local development (without Docker)
+### Local development
 
 ```bash
-composer setup             # Install deps, run migrations
-composer dev               # Concurrently: artisan serve + queue + pail + vite dev
+npm install                # Install all dependencies
+npm run dev                # Concurrently: Fastify API (:3000) + Vite dev server (:5173)
 ```
 
 Individual servers:
 ```bash
-php artisan serve          # Laravel on :8000
-npm run dev                # Vite dev server on :5173
+npm run dev:api            # Fastify on :3000
+npm run dev:vite           # Vite dev server on :5173 (proxies /api to :3000)
 ```
 
 ### Building
 
 ```bash
-npm run build              # Compile frontend assets (Vite → public/build/)
-php artisan migrate        # Run database migrations
-php artisan db:seed        # Seed 275 US properties (PropertySeeder)
+npm run build              # Compile Vue SPA (Vite → dist/)
 ```
 
-### Testing
+### Database
 
 ```bash
-composer test              # Clear config cache + run full PHPUnit suite
-php artisan test           # Same without config:clear
-php artisan test tests/Feature/ExampleTest.php   # Single file
-php artisan test --filter=testExample            # By method name
-php artisan test --parallel                      # Parallel execution
+npm run db:generate        # Generate Drizzle migration from schema changes
+npm run db:migrate         # Run pending migrations
+npm run db:seed            # Seed 275 US properties with notes and features
 ```
 
-Tests use SQLite in-memory (`DB_CONNECTION=sqlite` in phpunit.xml). No real database required.
-
-### Linting
+### Type checking
 
 ```bash
-vendor/bin/pint            # PHP code formatting (Laravel Pint)
-```
-
-### AI Service (standalone)
-
-```bash
-cd ai-service
-npm run dev                # Watch mode (tsx --watch)
-npm run start              # Production
-npm run typecheck          # TypeScript validation
-npm run sync-graph         # Sync Neo4j knowledge graph from PostgreSQL
+npm run typecheck          # TypeScript validation (tsc --noEmit)
 ```
 
 ## Architecture
@@ -77,70 +61,105 @@ npm run sync-graph         # Sync Neo4j knowledge graph from PostgreSQL
 ### Request Flow
 
 ```
-Vue SPA (Axios)
-    └─► Laravel API (:8000)
-            ├─ PropertyController → PostgreSQL (CRUD + geocoding)
-            ├─ NoteController → PostgreSQL
-            └─ AIController
-                    ├─ FeatureExtractionService → OpenRouter LLM → property_features table
-                    └─ PropertyScoringService OR proxy → AI Service (:3001)
-
-AI Service (:3001) — POST /search
-    ├─ LangGraph state machine
-    ├─ Neo4j path: Cypher generation → execution → hydrate from Laravel
-    └─ SQL fallback: /api/properties/search → score candidates → synthesize response
+Vue SPA (Axios → /api)
+    └─► Fastify Server (:3000)
+            ├─ propertyRoutes → Drizzle → PostgreSQL (CRUD + geocoding)
+            ├─ noteRoutes → Drizzle → PostgreSQL
+            └─ aiRoutes
+                    ├─ Feature extraction → OpenRouter LLM → property_features table
+                    ├─ Ranking → LangGraph ranking graph (in-process)
+                    └─ Similarity → LangGraph similarity graph (Neo4j + in-process)
 ```
 
-### Database Schema
+### Database Schema (Drizzle)
 
-**`properties`** — core records; `address` (unique), `latitude`, `longitude`, `extra_field` (JSON, Nominatim enrichment: city, state, osm_type, etc.)
+Defined in `src/db/schema.ts`:
 
-**`property_features`** — AI-extracted per-property (one-to-one): booleans (`near_subway`, `needs_renovation`, `parking_available`, `has_elevator`), numerics (`estimated_capacity_people`, `floor_level`, `condition_rating` 1–5), string (`recommended_use`), array (`amenities` JSON), and AI metadata (`confidence_score`, `raw_ai_response`).
+**`properties`** — `id`, `name` (unique), `address` (unique), `latitude`, `longitude`, `extra_field` (JSON), timestamps
 
-**`notes`** — unstructured research text, many-to-one with properties.
+**`notes`** — `id`, `property_id` (FK → properties), `note` (text), timestamps
+
+**`property_features`** — `id`, `property_id` (FK, unique), booleans (`near_subway`, `needs_renovation`, `parking_available`, `has_elevator`), numerics (`estimated_capacity_people`, `floor_level`, `condition_rating`), string (`recommended_use`), array (`amenities` JSON), AI metadata (`confidence_score`, `raw_ai_response`, `extracted_at`), timestamps
 
 ### Key Services
 
-| Service | Responsibility |
-|---|---|
-| `GeolocationService` | Forward/reverse geocoding via Nominatim (OpenStreetMap) |
-| `OpenRouterService` | OpenAI-compatible LLM client; exponential backoff retries; JSON extraction mode |
-| `FeatureExtractionService` | Notes → structured `PropertyFeature` via LLM (upserts) |
-| `PropertyScoringService` | PHP-based scoring fallback when AI Service is unavailable |
+| Service | File | Responsibility |
+|---|---|---|
+| Geolocation | `src/services/geolocation.ts` | Forward/reverse geocoding via Nominatim |
+| OpenRouter | `src/services/openrouter.ts` | LLM client with exponential backoff retries |
+| Feature Extraction | `src/services/featureExtraction.ts` | Notes → structured PropertyFeature via LLM |
+| Property Scoring | `src/services/propertyScoring.ts` | LLM-based property scoring (fallback) |
+| LLM Factory | `src/services/llm.ts` | ChatOpenAI factory for LangGraph |
+| Neo4j | `src/services/neo4jService.ts` | Neo4j driver + query helpers |
 
-### AI Service LangGraph Nodes
+### LangGraph Graphs
 
-Located in `ai-service/src/graph/nodes/`:
+**Ranking** (`src/graph/ranking/`):
+1. `parseRequirementsNode` — NL requirements → structured criteria (Zod)
+2. `buildRankingQueryNode` — criteria → filters + preferences
+3. `validateQueryNode` — validate/correct query fields
+4. `executeRankingNode` — Drizzle query → rank candidates by preference match count
+5. `generateResponseNode` — LLM scores + explanation + follow-up questions
 
-1. `parseRequirements` — NL requirements → structured criteria (Zod schema)
-2. `cypherGenerator` / `cypherExecutor` / `cypherCorrection` — Neo4j path (skipped if Neo4j not configured)
-3. `hydrateFromLaravel` — fetch full property data via `POST /api/properties/by-ids`
-4. `retrieveProperties` — SQL fallback via `POST /api/properties/search`
-5. `loosenCriteria` — up to 7 rounds of filter relaxation if no results
-6. `scoreCandidates` — parallel LLM scoring (0–10 with explanation, strengths, weaknesses)
-7. `generateResponse` — synthesize final answer + follow-up questions
+**Similarity** (`src/graph/similarity/`):
+1. `fetchPropertyNode` — Drizzle + Neo4j concept nodes
+2. `traverseGraphNode` — Neo4j graph traversal for similar properties
+3. `scoreSimilarityNode` — weighted scoring
+4. `generateExplanationNode` — LLM explanations + hydrate from Drizzle
 
-**Neo4j** is optional. When `NEO4J_URI`/`NEO4J_PASSWORD` are set, the graph path activates; otherwise the service falls back to SQL retrieval.
+**Neo4j** is optional. When `NEO4J_URI`/`NEO4J_PASSWORD` are set, the graph path activates.
 
 ### Frontend Structure
 
-Vue Router pages: `PropertiesIndex`, `PropertyCreate`, `PropertyShow`, `MapView`, `ScoringView`.
+**Pages:** `PropertiesIndex`, `PropertyCreate`, `PropertyShow`, `MapView`, `ScoringView`
 
-Pinia stores: `propertyStore` (primary CRUD), `mapStore`, `scoringStore`.
+**Stores:** `propertyStore` (CRUD), `mapStore`, `scoringStore`
 
-API client at `resources/js/api/index.js` — Axios wrapper pointing to `/api`.
+**API client:** `client/api/index.js` — Axios wrapper pointing to `/api`
 
-Vite aliases: `@/` → `resources/js/`.
+**Vite aliases:** `@/` → `client/`
+
+### API Routes
+
+| Method | Path | Handler |
+|---|---|---|
+| GET | /api/properties | List all with notes + features |
+| POST | /api/properties | Create with geocoding |
+| GET | /api/properties/:id | Show with notes + features |
+| POST | /api/properties/search | Search by feature criteria |
+| POST | /api/properties/by-ids | Batch load by IDs |
+| GET | /api/notes | List notes for property |
+| POST | /api/notes | Add note |
+| POST | /api/ai/extract-features | Extract features from notes |
+| POST | /api/ai/score | Rank properties (LangGraph) |
+| POST | /api/ai/score/stream | Rank with SSE progress |
+| POST | /api/ai/similar | Find similar properties |
+| GET | /api/properties/:id/features | Get extracted features |
 
 ### Environment Variables
 
-Critical vars (see `.env.example`):
-- `LLM_API_KEY` — OpenRouter API key (shared by Laravel and AI Service)
+See `.env.example`. Key vars:
+- `DATABASE_URL` — PostgreSQL connection string
+- `LLM_API_KEY` — OpenRouter API key
 - `LLM_MODEL` — default `google/gemini-2.0-flash-001`
-- `AI_SERVICE_URL` — default `http://localhost:3001`; set to `http://ai-service:3001` in Docker
-- `NEO4J_PASSWORD` — default `neo4j-secret` (activates graph path when set alongside `NEO4J_URI`)
-- `LANGSMITH_API_KEY` + `LANGCHAIN_TRACING_V2=true` — optional LangSmith tracing
+- `NEO4J_URI` + `NEO4J_PASSWORD` — optional, activates graph path
+- `PORT` — server port (default 3000)
 
-### Config Files
+### Project Structure
 
-Custom Laravel configs live in `config/`: `ai.php`, `llm.php`, `geolocation.php`.
+```
+src/                  # Fastify backend (TypeScript)
+  ├── server.ts       # App bootstrap
+  ├── config.ts       # Environment config
+  ├── db/             # Drizzle schema, client, migrations, seeder
+  ├── routes/         # API route handlers
+  ├── services/       # Business logic services
+  └── graph/          # LangGraph ranking + similarity graphs
+client/               # Vue 3 SPA
+  ├── pages/          # Route views
+  ├── components/     # Reusable components
+  ├── stores/         # Pinia stores
+  ├── api/            # Axios client
+  └── router/         # Vue Router config
+drizzle/              # Generated SQL migrations
+```

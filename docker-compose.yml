@@ -2,47 +2,22 @@ services:
   app:
     build: .
     ports:
-      - "8000:8000"
-    volumes:
-      - .:/var/www/html
-      - /var/www/html/vendor
-    depends_on:
-      postgres:
-        condition: service_healthy
+      - "3000:3000"
     environment:
-      - DB_CONNECTION=pgsql
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_DATABASE=alvorada_db
-      - DB_USERNAME=alvorada_user
-      - DB_PASSWORD=alvorada_password
-      - VITE_DEV_SERVER_URL=http://localhost:5173
-      - AI_SERVICE_URL=http://ai-service:3001
+      - DATABASE_URL=postgresql://alvorada_user:alvorada_password@postgres:5432/alvorada_db
       - LLM_API_KEY=${LLM_API_KEY:-}
-
-  ai-service:
-    build:
-      context: ./ai-service
-      dockerfile: Dockerfile
-    ports:
-      - "3001:3001"
-    environment:
-      - PORT=3001
-      - LARAVEL_API_URL=http://app:8000/api
-      - LLM_API_KEY=${LLM_API_KEY:-}
-      - OPENROUTER_API_KEY=${LLM_API_KEY:-}
       - LLM_MODEL=${LLM_MODEL:-google/gemini-2.0-flash-001}
-      - LANGSMITH_API_KEY=${LANGSMITH_API_KEY:-}
-      - LANGCHAIN_TRACING_V2=${LANGCHAIN_TRACING_V2:-false}
-      - LANGCHAIN_PROJECT=${LANGCHAIN_PROJECT:-alvorada-property-research}
       - NEO4J_URI=bolt://neo4j:7687
       - NEO4J_USER=neo4j
       - NEO4J_PASSWORD=${NEO4J_PASSWORD:-neo4j-secret}
+      - LANGSMITH_API_KEY=${LANGSMITH_API_KEY:-}
+      - LANGCHAIN_TRACING_V2=${LANGCHAIN_TRACING_V2:-false}
+      - LANGCHAIN_PROJECT=${LANGCHAIN_PROJECT:-alvorada-property-research}
+      - PORT=3000
+      - NODE_ENV=production
     depends_on:
-      app:
-        condition: service_started
-      neo4j:
-        condition: service_started
+      postgres:
+        condition: service_healthy
 
   neo4j:
     image: neo4j:5-community
