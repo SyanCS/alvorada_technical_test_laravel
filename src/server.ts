@@ -16,15 +16,23 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 export async function buildServer() {
   const app = Fastify({ logger: true });
 
-  // LangGraph graphs
-  const llm = createLlm();
-  const rankingGraph = buildRankingGraph(llm);
-  const similarityGraph = buildSimilarityGraph(llm);
+  // LangGraph graphs — lazy init so server starts without LLM_API_KEY
+  let rankingGraph: ReturnType<typeof buildRankingGraph> | undefined;
+  let similarityGraph: ReturnType<typeof buildSimilarityGraph> | undefined;
+
+  function getGraphs() {
+    if (!rankingGraph || !similarityGraph) {
+      const llm = createLlm();
+      rankingGraph = buildRankingGraph(llm);
+      similarityGraph = buildSimilarityGraph(llm);
+    }
+    return { rankingGraph, similarityGraph };
+  }
 
   // API routes
   await app.register(propertyRoutes);
   await app.register(noteRoutes);
-  await app.register(aiRoutes, { rankingGraph, similarityGraph } as any);
+  await app.register(aiRoutes, { getGraphs } as any);
 
   // Health check
   app.get("/api/health", async () => ({ ok: true }));

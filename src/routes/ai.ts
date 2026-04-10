@@ -12,8 +12,8 @@ const NODE_LABELS: Record<string, string> = {
   generateResponse: "Generating scores & response",
 };
 
-export async function aiRoutes(app: FastifyInstance, deps: { rankingGraph: any; similarityGraph: any }) {
-  const { rankingGraph, similarityGraph } = deps;
+export async function aiRoutes(app: FastifyInstance, deps: { getGraphs: () => { rankingGraph: any; similarityGraph: any } }) {
+  const { getGraphs } = deps;
 
   // POST /api/ai/extract-features
   app.post<{ Body: { property_id?: number; force_refresh?: boolean } }>("/api/ai/extract-features", async (req, reply) => {
@@ -55,6 +55,7 @@ export async function aiRoutes(app: FastifyInstance, deps: { rankingGraph: any; 
     }
 
     try {
+      const { rankingGraph } = getGraphs();
       const state = await rankingGraph.invoke({ requirements, resultLimit: limit });
       return reply.send({
         data: {
@@ -101,6 +102,7 @@ export async function aiRoutes(app: FastifyInstance, deps: { rankingGraph: any; 
       send("nodes", nodeNames.map((id) => ({ id, label: NODE_LABELS[id] })));
 
       let finalState: RankingState | undefined;
+      const { rankingGraph } = getGraphs();
       const stream = await rankingGraph.stream(
         { requirements, resultLimit: limit },
         { streamMode: "updates" },
@@ -144,6 +146,7 @@ export async function aiRoutes(app: FastifyInstance, deps: { rankingGraph: any; 
     }
 
     try {
+      const { similarityGraph } = getGraphs();
       const state = await similarityGraph.invoke({ property_id: propertyId, limit });
       return reply.send({
         data: {
