@@ -12,7 +12,8 @@
     "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "node --env-file .env --import tsx src/db/migrate.ts",
-    "db:seed": "node --env-file .env --import tsx src/db/seed.ts"
+    "db:seed": "node --env-file .env --import tsx src/db/seed.ts",
+    "neo4j:seed": "node --env-file .env --import tsx src/db/neo4jSeeder.ts"
   },
   "dependencies": {
     "@langchain/core": "^0.3.72",
