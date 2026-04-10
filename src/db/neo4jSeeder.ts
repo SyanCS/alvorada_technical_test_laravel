@@ -214,7 +214,7 @@ async function main() {
     // 3. Create constraints and indexes
     console.log("Creating constraints and indexes...");
     const constraints = [
-      "CREATE CONSTRAINT IF NOT EXISTS FOR (p:Property) REQUIRE p.laravel_id IS UNIQUE",
+      "CREATE CONSTRAINT IF NOT EXISTS FOR (p:Property) REQUIRE p.property_id IS UNIQUE",
       "CREATE CONSTRAINT IF NOT EXISTS FOR (n:Neighborhood) REQUIRE n.name IS UNIQUE",
       "CREATE CONSTRAINT IF NOT EXISTS FOR (l:Landmark) REQUIRE l.name IS UNIQUE",
       "CREATE CONSTRAINT IF NOT EXISTS FOR (a:Amenity) REQUIRE a.type IS UNIQUE",
@@ -256,7 +256,7 @@ async function main() {
     // 5. Create Property nodes
     console.log("Creating property nodes...");
     await session.run(
-      `UNWIND $items AS item CREATE (:Property { laravel_id: item })`,
+      `UNWIND $items AS item CREATE (:Property { property_id: item })`,
       { items: propertyRows.map((r) => r.id) }
     );
     console.log(`  Property nodes: ${propertyRows.length}\n`);
@@ -293,7 +293,7 @@ async function main() {
 
     await session.run(
       `UNWIND $rels AS rel
-       MATCH (p:Property { laravel_id: rel.pid })
+       MATCH (p:Property { property_id: rel.pid })
        MATCH (n:Neighborhood { name: rel.name })
        CREATE (p)-[:IN]->(n)`,
       { rels: relNeighborhood }
@@ -301,7 +301,7 @@ async function main() {
 
     await session.run(
       `UNWIND $rels AS rel
-       MATCH (p:Property { laravel_id: rel.pid })
+       MATCH (p:Property { property_id: rel.pid })
        MATCH (l:Landmark { name: rel.name })
        CREATE (p)-[:NEAR]->(l)`,
       { rels: relLandmark }
@@ -309,7 +309,7 @@ async function main() {
 
     await session.run(
       `UNWIND $rels AS rel
-       MATCH (p:Property { laravel_id: rel.pid })
+       MATCH (p:Property { property_id: rel.pid })
        MATCH (a:Amenity { type: rel.type })
        CREATE (p)-[:HAS_AMENITY]->(a)`,
       { rels: relAmenity }
@@ -317,7 +317,7 @@ async function main() {
 
     await session.run(
       `UNWIND $rels AS rel
-       MATCH (p:Property { laravel_id: rel.pid })
+       MATCH (p:Property { property_id: rel.pid })
        MATCH (u:UseType { name: rel.name })
        CREATE (p)-[:SUITED_FOR]->(u)`,
       { rels: relUseType }

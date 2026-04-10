@@ -1,7 +1,7 @@
 // ai-service/src/graph/ranking/nodes/buildRankingQueryNode.ts
 import type { RankingState } from "../types.js";
 
-// Hard filters → sent to Laravel as search criteria (must match)
+// Hard filters → search criteria (must match)
 const HARD_FILTER_KEYS = ["recommended_use", "min_capacity", "max_capacity", "min_condition"] as const;
 
 // Soft preferences → counted locally after retrieval (nice to have)

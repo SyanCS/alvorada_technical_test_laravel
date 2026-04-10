@@ -22,7 +22,7 @@ export function createFetchPropertyNode() {
       });
 
       const rows = await runReadQuery(
-        `MATCH (p:Property { laravel_id: $id })
+        `MATCH (p:Property { property_id: $id })
          RETURN
            [(p)-[:NEAR]->(l:Landmark) | { name: l.name, type: l.type }] AS landmarks,
            [(p)-[:IN]->(n:Neighborhood) | { name: n.name }] AS neighborhoods,

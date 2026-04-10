@@ -11,9 +11,9 @@ export function createTraverseGraphNode() {
       const candidateLimit = (state.limit ?? 10) * 3;
 
       const rows = await runReadQuery(
-        `MATCH (source:Property { laravel_id: $id })
+        `MATCH (source:Property { property_id: $id })
          MATCH (other:Property)
-         WHERE other.laravel_id <> $id
+         WHERE other.property_id <> $id
          WITH source, other,
            [(source)-[:IN]->(n:Neighborhood)<-[:IN]-(other) | n.name] AS shared_neighborhoods,
            [(source)-[:NEAR]->(l:Landmark)<-[:NEAR]-(other) | l.name] AS shared_landmarks,
@@ -31,7 +31,7 @@ export function createTraverseGraphNode() {
             + size(shared_use_types) * ${WEIGHTS.use_type}) AS weighted_score
          ORDER BY weighted_score DESC
          LIMIT $limit
-         RETURN other.laravel_id AS property_id,
+         RETURN other.property_id AS property_id,
                 shared_neighborhoods, shared_landmarks, shared_amenities, shared_use_types,
                 (size(shared_neighborhoods) + size(shared_landmarks) + size(shared_amenities) + size(shared_use_types)) AS raw_match_count,
                 weighted_score`,
