@@ -4,15 +4,15 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "concurrently -n api,vite -c blue,green \"node --watch --import tsx src/index.ts\" \"vite\"",
-    "dev:api": "node --watch --import tsx src/index.ts",
+    "dev": "concurrently -n api,vite -c blue,green \"node --env-file .env --watch --import tsx src/index.ts\" \"vite\"",
+    "dev:api": "node --env-file .env --watch --import tsx src/index.ts",
     "dev:vite": "vite",
     "build": "vite build",
-    "start": "node --import tsx src/index.ts",
+    "start": "node --env-file .env --import tsx src/index.ts",
     "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "node --import tsx src/db/migrate.ts",
-    "db:seed": "node --import tsx src/db/seed.ts"
+    "db:migrate": "node --env-file .env --import tsx src/db/migrate.ts",
+    "db:seed": "node --env-file .env --import tsx src/db/seed.ts"
   },
   "dependencies": {
     "@langchain/core": "^0.3.72",
