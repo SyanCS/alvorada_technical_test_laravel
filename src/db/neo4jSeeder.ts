@@ -113,7 +113,7 @@ function assignAmenities(row: PropertyRow): string[] {
   if (matched.length >= 2) {
     // Pad to 2-4 total
     const remaining = AMENITIES.filter((a) => !matched.includes(a));
-    const extra = pick(remaining, Math.floor(Math.random() * 2) + (2 - matched.length));
+    const extra = pick(remaining, Math.max(0, Math.floor(Math.random() * 2) + (2 - matched.length)));
     return [...matched, ...extra].slice(0, 4);
   }
   // Fewer than 2 matches: pad with random
@@ -159,8 +159,9 @@ function assignLandmarks(row: PropertyRow): { name: string; type: string }[] {
     }
   }
 
-  // Fill to 2-3 total
+  // Cap at 2-3 total
   const target = 2 + Math.floor(Math.random() * 2); // 2 or 3
+  if (assigned.length > target) assigned.length = target;
   while (assigned.length < target) {
     const available = LANDMARKS.filter((l) => !usedNames.has(l.name));
     if (available.length === 0) break;
