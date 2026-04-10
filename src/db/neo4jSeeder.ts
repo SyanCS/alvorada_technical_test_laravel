@@ -336,8 +336,8 @@ async function main() {
   } finally {
     await session.close();
     await closeNeo4jDriver();
-    process.exit(0);
   }
+  process.exit(0);
 }
 
 main().catch((e) => {
