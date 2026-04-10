@@ -172,3 +172,175 @@ function assignLandmarks(row: PropertyRow): { name: string; type: string }[] {
 
   return assigned;
 }
+
+// ---------------------------------------------------------------------------
+// Main
+// ---------------------------------------------------------------------------
+async function main() {
+  console.log("=== Neo4j Graph Seeder ===\n");
+
+  // 1. Fetch all properties with features from Postgres
+  console.log("Fetching properties from Postgres...");
+  const rows = await db.query.properties.findMany({
+    with: { propertyFeature: true },
+  });
+  console.log(`  Found ${rows.length} properties.\n`);
+
+  const propertyRows: PropertyRow[] = rows.map((r) => ({
+    id: r.id,
+    features: r.propertyFeature
+      ? {
+          nearSubway: r.propertyFeature.nearSubway,
+          needsRenovation: r.propertyFeature.needsRenovation,
+          parkingAvailable: r.propertyFeature.parkingAvailable,
+          hasElevator: r.propertyFeature.hasElevator,
+          estimatedCapacityPeople: r.propertyFeature.estimatedCapacityPeople,
+          conditionRating: r.propertyFeature.conditionRating,
+          recommendedUse: r.propertyFeature.recommendedUse,
+          amenities: r.propertyFeature.amenities as string[] | null,
+        }
+      : null,
+  }));
+
+  // 2. Connect to Neo4j and wipe
+  const driver = getNeo4jDriver();
+  const session = driver.session({ defaultAccessMode: neo4j.session.WRITE });
+
+  try {
+    console.log("Wiping existing Neo4j data...");
+    await session.run("MATCH (n) DETACH DELETE n");
+    console.log("  Done.\n");
+
+    // 3. Create constraints and indexes
+    console.log("Creating constraints and indexes...");
+    const constraints = [
+      "CREATE CONSTRAINT IF NOT EXISTS FOR (p:Property) REQUIRE p.laravel_id IS UNIQUE",
+      "CREATE CONSTRAINT IF NOT EXISTS FOR (n:Neighborhood) REQUIRE n.name IS UNIQUE",
+      "CREATE CONSTRAINT IF NOT EXISTS FOR (l:Landmark) REQUIRE l.name IS UNIQUE",
+      "CREATE CONSTRAINT IF NOT EXISTS FOR (a:Amenity) REQUIRE a.type IS UNIQUE",
+      "CREATE CONSTRAINT IF NOT EXISTS FOR (u:UseType) REQUIRE u.name IS UNIQUE",
+    ];
+    for (const c of constraints) {
+      await session.run(c);
+    }
+    console.log("  Done.\n");
+
+    // 4. Create concept nodes
+    console.log("Creating concept nodes...");
+
+    await session.run(
+      `UNWIND $items AS item CREATE (:Neighborhood { name: item })`,
+      { items: NEIGHBORHOODS }
+    );
+    console.log(`  Neighborhoods: ${NEIGHBORHOODS.length}`);
+
+    await session.run(
+      `UNWIND $items AS item CREATE (:Landmark { name: item.name, type: item.type })`,
+      { items: LANDMARKS }
+    );
+    console.log(`  Landmarks: ${LANDMARKS.length}`);
+
+    await session.run(
+      `UNWIND $items AS item CREATE (:Amenity { type: item })`,
+      { items: AMENITIES }
+    );
+    console.log(`  Amenities: ${AMENITIES.length}`);
+
+    await session.run(
+      `UNWIND $items AS item CREATE (:UseType { name: item })`,
+      { items: USE_TYPES }
+    );
+    console.log(`  Use types: ${USE_TYPES.length}`);
+    console.log();
+
+    // 5. Create Property nodes
+    console.log("Creating property nodes...");
+    await session.run(
+      `UNWIND $items AS item CREATE (:Property { laravel_id: item })`,
+      { items: propertyRows.map((r) => r.id) }
+    );
+    console.log(`  Property nodes: ${propertyRows.length}\n`);
+
+    // 6. Build relationship data
+    console.log("Computing feature-aware assignments...");
+    const relNeighborhood: { pid: number; name: string }[] = [];
+    const relLandmark: { pid: number; name: string }[] = [];
+    const relAmenity: { pid: number; type: string }[] = [];
+    const relUseType: { pid: number; name: string }[] = [];
+
+    for (const row of propertyRows) {
+      for (const n of assignNeighborhoods(row)) {
+        relNeighborhood.push({ pid: row.id, name: n });
+      }
+      for (const l of assignLandmarks(row)) {
+        relLandmark.push({ pid: row.id, name: l.name });
+      }
+      for (const a of assignAmenities(row)) {
+        relAmenity.push({ pid: row.id, type: a });
+      }
+      for (const u of assignUseTypes(row)) {
+        relUseType.push({ pid: row.id, name: u });
+      }
+    }
+    console.log(`  Neighborhood edges: ${relNeighborhood.length}`);
+    console.log(`  Landmark edges: ${relLandmark.length}`);
+    console.log(`  Amenity edges: ${relAmenity.length}`);
+    console.log(`  UseType edges: ${relUseType.length}`);
+    console.log();
+
+    // 7. Batch-create relationships
+    console.log("Creating relationships...");
+
+    await session.run(
+      `UNWIND $rels AS rel
+       MATCH (p:Property { laravel_id: rel.pid })
+       MATCH (n:Neighborhood { name: rel.name })
+       CREATE (p)-[:IN]->(n)`,
+      { rels: relNeighborhood }
+    );
+
+    await session.run(
+      `UNWIND $rels AS rel
+       MATCH (p:Property { laravel_id: rel.pid })
+       MATCH (l:Landmark { name: rel.name })
+       CREATE (p)-[:NEAR]->(l)`,
+      { rels: relLandmark }
+    );
+
+    await session.run(
+      `UNWIND $rels AS rel
+       MATCH (p:Property { laravel_id: rel.pid })
+       MATCH (a:Amenity { type: rel.type })
+       CREATE (p)-[:HAS_AMENITY]->(a)`,
+      { rels: relAmenity }
+    );
+
+    await session.run(
+      `UNWIND $rels AS rel
+       MATCH (p:Property { laravel_id: rel.pid })
+       MATCH (u:UseType { name: rel.name })
+       CREATE (p)-[:SUITED_FOR]->(u)`,
+      { rels: relUseType }
+    );
+    console.log("  Done.\n");
+
+    // 8. Summary
+    const totalEdges = relNeighborhood.length + relLandmark.length + relAmenity.length + relUseType.length;
+    const avgEdges = (totalEdges / propertyRows.length).toFixed(1);
+    console.log("=== Summary ===");
+    console.log(`  Concept nodes: ${NEIGHBORHOODS.length + LANDMARKS.length + AMENITIES.length + USE_TYPES.length}`);
+    console.log(`  Property nodes: ${propertyRows.length}`);
+    console.log(`  Total relationships: ${totalEdges}`);
+    console.log(`  Avg connections per property: ${avgEdges}`);
+    console.log("\nNeo4j graph seeded successfully!");
+  } finally {
+    await session.close();
+    await closeNeo4jDriver();
+    process.exit(0);
+  }
+}
+
+main().catch((e) => {
+  console.error("Neo4j seed failed:", e);
+  process.exit(1);
+});
