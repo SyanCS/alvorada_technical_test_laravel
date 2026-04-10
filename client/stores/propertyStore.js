@@ -28,10 +28,33 @@ export const usePropertyStore = defineStore('property', () => {
     }
 
     function normalizeProperty(p) {
-        if (p && p.property_feature && !p.features) {
-            p.features = p.property_feature;
+        // Drizzle returns camelCase relation/field names; Vue components expect snake_case
+        const raw = p.propertyFeature ?? p.property_feature ?? null;
+        if (raw && !p.features) {
+            p.features = normalizeFeatures(raw);
         }
+        // Normalize top-level property keys for components that expect snake_case
+        if (p.extraField !== undefined && p.extra_field === undefined) p.extra_field = p.extraField;
+        if (p.createdAt !== undefined && p.created_at === undefined) p.created_at = p.createdAt;
+        if (p.updatedAt !== undefined && p.updated_at === undefined) p.updated_at = p.updatedAt;
         return p;
+    }
+
+    function normalizeFeatures(f) {
+        if (!f) return null;
+        return {
+            ...f,
+            near_subway: f.nearSubway ?? f.near_subway ?? null,
+            needs_renovation: f.needsRenovation ?? f.needs_renovation ?? null,
+            parking_available: f.parkingAvailable ?? f.parking_available ?? null,
+            has_elevator: f.hasElevator ?? f.has_elevator ?? null,
+            estimated_capacity_people: f.estimatedCapacityPeople ?? f.estimated_capacity_people ?? null,
+            floor_level: f.floorLevel ?? f.floor_level ?? null,
+            condition_rating: f.conditionRating ?? f.condition_rating ?? null,
+            recommended_use: f.recommendedUse ?? f.recommended_use ?? null,
+            amenities: f.amenities ?? null,
+            confidence_score: f.confidenceScore ?? f.confidence_score ?? null,
+        };
     }
 
     async function fetchProperty(id) {
@@ -90,7 +113,8 @@ export const usePropertyStore = defineStore('property', () => {
             property_id: propertyId,
             force_refresh: forceRefresh,
         });
-        const features = data.data ?? data;
+        const payload = data.data ?? data;
+        const features = normalizeFeatures(payload.features ?? payload);
         if (currentProperty.value && currentProperty.value.id === propertyId) {
             currentProperty.value.features = features;
         }
@@ -99,7 +123,8 @@ export const usePropertyStore = defineStore('property', () => {
 
     async function fetchFeatures(propertyId) {
         const { data } = await api.get(`/properties/${propertyId}/features`);
-        const features = data.data ?? data;
+        const payload = data.data ?? data;
+        const features = normalizeFeatures(payload.features ?? payload);
         if (currentProperty.value && currentProperty.value.id === propertyId) {
             currentProperty.value.features = features;
         }
