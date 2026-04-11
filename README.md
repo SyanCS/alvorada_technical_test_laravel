@@ -4,7 +4,7 @@ A full-stack real estate research platform built as a study project to explore *
 
 The system lets users catalog commercial properties, attach free-text notes, and then leverage three distinct AI pipelines: **feature extraction** (notes to structured data), **property ranking** (natural-language requirements to scored results), and **similarity search** (knowledge-graph traversal with LLM explanations).
 
-[**Watch the demo video**](https://drive.google.com/file/d/1aIh6Bej-Hd2HxhEC9ZToE0p8VgBv0slk/view?usp=sharing)
+[**Watch the demo video**](https://drive.google.com/file/d/1K2ZUQOF_UxYK0jvEG5vkb_dRWz1vV_1X/view?usp=sharing)
 
 ---
 
