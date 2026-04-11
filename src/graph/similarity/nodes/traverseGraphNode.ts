@@ -1,3 +1,4 @@
+import neo4j from "neo4j-driver";
 import { runReadQuery } from "../../../services/neo4jService.js";
 import { TraversalResultSchema, type SimilarityState } from "../types.js";
 
@@ -8,7 +9,7 @@ export function createTraverseGraphNode() {
   return async (state: SimilarityState): Promise<Partial<SimilarityState>> => {
     try {
       const id = state.property_id;
-      const candidateLimit = (state.limit ?? 10) * 3;
+      const candidateLimit = Math.round((state.limit ?? 10) * 3);
 
       const rows = await runReadQuery(
         `MATCH (source:Property { property_id: $id })
@@ -35,7 +36,7 @@ export function createTraverseGraphNode() {
                 shared_neighborhoods, shared_landmarks, shared_amenities, shared_use_types,
                 (size(shared_neighborhoods) + size(shared_landmarks) + size(shared_amenities) + size(shared_use_types)) AS raw_match_count,
                 weighted_score`,
-        { id, limit: candidateLimit }
+        { id: neo4j.int(id), limit: neo4j.int(candidateLimit) }
       );
 
       const candidates = rows.map((r) => ({

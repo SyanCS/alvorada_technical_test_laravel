@@ -1,0 +1,16 @@
+- generic [ref=e3]:
+  - navigation [ref=e4]:
+    - generic [ref=e6]:
+      - link "Alvorada" [ref=e7] [cursor=pointer]:
+        - /url: /
+        - img [ref=e9]
+        - generic [ref=e11]: Alvorada
+      - button "Toggle navigation" [ref=e12]:
+        - img [ref=e13]
+  - main [ref=e15]:
+    - generic [ref=e16]:
+      - link "Back to Properties" [ref=e17] [cursor=pointer]:
+        - /url: /
+        - img [ref=e18]
+        - text: Back to Properties
+      - paragraph [ref=e22]: Loading property...

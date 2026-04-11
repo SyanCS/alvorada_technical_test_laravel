@@ -18,6 +18,9 @@ export function createExecuteRankingNode() {
       const filters = q?.corrected_filters ?? state.rankingQuery?.filters ?? {};
       const preferences = q?.corrected_preferences ?? state.rankingQuery?.preferences ?? {};
 
+      console.log(`[executeRanking] filters:`, JSON.stringify(filters));
+      console.log(`[executeRanking] preferences:`, JSON.stringify(preferences));
+
       const conditions = [];
       if (filters.recommended_use) {
         conditions.push(sql`LOWER(${schema.propertyFeatures.recommendedUse}) LIKE ${`%${String(filters.recommended_use).toLowerCase()}%`}`);
@@ -52,7 +55,9 @@ export function createExecuteRankingNode() {
         query = query.where(and(...conditions)) as typeof query;
       }
 
+      const t0 = Date.now();
       const rows = await query;
+      console.log(`[executeRanking] DB query: ${Date.now() - t0}ms, rows: ${rows.length}`);
 
       const raw = rows.map((r) => ({
         ...r.properties,
@@ -86,6 +91,7 @@ export function createExecuteRankingNode() {
       }).filter((c): c is NonNullable<typeof c> => c !== null);
 
       candidates.sort((a, b) => b.match_count - a.match_count);
+      console.log(`[executeRanking] total time: ${Date.now() - t0}ms, candidates: ${candidates.length}`);
 
       return {
         rankedCandidates: { candidates, total_checked: raw.length },

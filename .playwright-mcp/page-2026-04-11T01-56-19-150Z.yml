@@ -1,0 +1,35 @@
+- generic [ref=e3]:
+  - navigation [ref=e4]:
+    - generic [ref=e6]:
+      - link "Alvorada" [ref=e7] [cursor=pointer]:
+        - /url: /
+        - img [ref=e9]
+        - generic [ref=e11]: Alvorada
+      - button "Toggle navigation" [ref=e12]:
+        - img [ref=e13]
+  - main [ref=e15]:
+    - generic [ref=e16]:
+      - generic [ref=e17]:
+        - heading "Property Scoring" [level=1] [ref=e18]
+        - paragraph [ref=e19]: Enter your client's requirements and our AI will score all properties from 0 to 10.
+        - generic [ref=e20]:
+          - paragraph [ref=e21]: Quick Examples
+          - generic [ref=e22]:
+            - button "Office space" [ref=e23]
+            - button "Retail storefront" [ref=e24]
+            - button "Warehouse" [ref=e25]
+            - button "Tech startup" [ref=e26]
+        - generic [ref=e27]:
+          - generic [ref=e28]: Client Requirements
+          - 'textbox "Example: Client is looking for an office near the subway, budget up to $50k/month, for 15-20 people, preferably in a central area with parking and modern amenities." [ref=e29]': I need a modern office space near subway
+        - generic [ref=e30]:
+          - generic [ref=e31]:
+            - generic [ref=e32]: Limit
+            - spinbutton [ref=e33]: "10"
+          - button "Score All Properties" [ref=e82]
+      - generic [ref=e83]:
+        - img [ref=e85]
+        - heading "No Properties Found" [level=3] [ref=e87]
+        - paragraph [ref=e88]: No properties available to score. Add some properties first!
+        - link "Add Property" [ref=e89] [cursor=pointer]:
+          - /url: /properties/create

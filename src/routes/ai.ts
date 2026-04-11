@@ -12,6 +12,13 @@ const NODE_LABELS: Record<string, string> = {
   generateResponse: "Generating scores & response",
 };
 
+const SIMILARITY_NODE_LABELS: Record<string, string> = {
+  fetchProperty: "Fetching property & concepts",
+  traverseGraph: "Traversing knowledge graph",
+  scoreSimilarity: "Scoring similarity",
+  generateExplanation: "Generating explanations",
+};
+
 export async function aiRoutes(app: FastifyInstance, deps: { getGraphs: () => { rankingGraph: any; similarityGraph: any } }) {
   const { getGraphs } = deps;
 
@@ -160,6 +167,62 @@ export async function aiRoutes(app: FastifyInstance, deps: { getGraphs: () => { 
       app.log.error(e);
       const msg = e instanceof Error ? e.message : String(e);
       return reply.status(500).send({ data: null, message: msg });
+    }
+  });
+
+  // POST /api/ai/similar/stream — SSE
+  app.post<{ Body: { property_id?: number; limit?: number } }>("/api/ai/similar/stream", async (req, reply) => {
+    const propertyId = Number(req.body?.property_id);
+    const limit = Math.min(50, Math.max(1, Number(req.body?.limit ?? 10)));
+
+    if (!propertyId || isNaN(propertyId)) {
+      return reply.status(400).send({ data: null, message: "property_id is required" });
+    }
+
+    reply.hijack();
+    reply.raw.writeHead(200, {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache",
+      Connection: "keep-alive",
+      "X-Accel-Buffering": "no",
+    });
+
+    const send = (event: string, data: unknown) => {
+      reply.raw.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
+    };
+
+    try {
+      const nodeNames = Object.keys(SIMILARITY_NODE_LABELS);
+      send("nodes", nodeNames.map((id) => ({ id, label: SIMILARITY_NODE_LABELS[id] })));
+
+      let finalState: import("../graph/similarity/types.js").SimilarityState | undefined;
+      const { similarityGraph } = getGraphs();
+      const stream = await similarityGraph.stream(
+        { property_id: propertyId, limit },
+        { streamMode: "updates" },
+      );
+
+      for await (const chunk of stream) {
+        for (const nodeName of Object.keys(chunk)) {
+          send("node_complete", { node: nodeName });
+          finalState = { ...finalState, ...chunk[nodeName] } as typeof finalState;
+        }
+      }
+
+      if (finalState) {
+        send("result", {
+          similar_properties: finalState.similarProperties ?? [],
+          summary: finalState.summary ?? "",
+          source_property_id: propertyId,
+        });
+      }
+
+      send("done", {});
+    } catch (e) {
+      app.log.error(e);
+      send("error", { message: e instanceof Error ? e.message : String(e) });
+    } finally {
+      reply.raw.end();
     }
   });
 

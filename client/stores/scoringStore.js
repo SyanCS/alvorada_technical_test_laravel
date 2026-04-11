@@ -41,6 +41,7 @@ export const useScoringStore = defineStore('scoring', () => {
             const reader = response.body.getReader();
             const decoder = new TextDecoder();
             let buffer = '';
+            let eventType = null;
 
             while (true) {
                 const { done, value } = await reader.read();
@@ -50,7 +51,6 @@ export const useScoringStore = defineStore('scoring', () => {
                 const lines = buffer.split('\n');
                 buffer = lines.pop() || '';
 
-                let eventType = null;
                 for (const line of lines) {
                     if (line.startsWith('event: ')) {
                         eventType = line.slice(7).trim();

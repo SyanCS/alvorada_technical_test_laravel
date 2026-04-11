@@ -1,0 +1,65 @@
+- generic [ref=e3]:
+  - navigation [ref=e4]:
+    - generic [ref=e6]:
+      - link "Alvorada" [ref=e7] [cursor=pointer]:
+        - /url: /
+        - img [ref=e9]
+        - generic [ref=e11]: Alvorada
+      - generic [ref=e12]:
+        - link "Properties" [ref=e13] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e14]:
+            - img [ref=e15]
+            - text: Properties
+        - link "Map" [ref=e17] [cursor=pointer]:
+          - /url: /map
+          - generic [ref=e18]:
+            - img [ref=e19]
+            - text: Map
+        - link "Scoring" [ref=e21] [cursor=pointer]:
+          - /url: /scoring
+          - generic [ref=e22]:
+            - img [ref=e23]
+            - text: Scoring
+  - main [ref=e25]:
+    - generic [ref=e26]:
+      - link "Back to Properties" [ref=e27] [cursor=pointer]:
+        - /url: /
+        - img [ref=e28]
+        - text: Back to Properties
+      - generic [ref=e30]:
+        - heading "Upper Arlington Office" [level=1] [ref=e31]
+        - paragraph [ref=e32]: 1945 Northwest Boulevard, Columbus, OH 43212
+        - generic [ref=e33]:
+          - generic [ref=e34]:
+            - paragraph [ref=e35]: Latitude
+            - paragraph [ref=e36]: "39.985900"
+          - generic [ref=e37]:
+            - paragraph [ref=e38]: Longitude
+            - paragraph [ref=e39]: "-83.063300"
+          - generic [ref=e40]:
+            - paragraph [ref=e41]: Notes
+            - paragraph [ref=e42]: "2"
+          - generic [ref=e43]:
+            - paragraph [ref=e44]: Created
+            - paragraph [ref=e45]: Apr 6, 2026
+        - button "Marker" [ref=e47] [cursor=pointer]
+      - generic [ref=e48]:
+        - button "Notes" [ref=e49]
+        - button "Features" [ref=e50]
+      - generic [ref=e51]:
+        - generic [ref=e53]:
+          - generic [ref=e54]:
+            - textbox "Write a note about this property..." [ref=e55]
+            - generic [ref=e56]: "0"
+          - button "Add Note" [disabled] [ref=e58]
+        - generic [ref=e59]:
+          - generic [ref=e60]:
+            - paragraph [ref=e61]: ADA compliant. Elevator serves all floors.
+            - paragraph
+          - generic [ref=e62]:
+            - paragraph [ref=e63]: near subway
+            - paragraph
+      - generic [ref=e65]:
+        - heading "Similar Properties" [level=2] [ref=e66]
+        - button "Find Similar" [ref=e67]

@@ -1,0 +1,145 @@
+- generic [ref=e3]:
+  - navigation [ref=e4]:
+    - generic [ref=e6]:
+      - link "Alvorada" [ref=e7] [cursor=pointer]:
+        - /url: /
+        - img [ref=e9]
+        - generic [ref=e11]: Alvorada
+      - button "Toggle navigation" [ref=e12]:
+        - img [ref=e13]
+  - main [ref=e15]:
+    - generic [ref=e16]:
+      - link "Back to Properties" [ref=e17] [cursor=pointer]:
+        - /url: /
+        - img [ref=e18]
+        - text: Back to Properties
+      - generic [ref=e23]:
+        - heading "Wake Forest Town Center" [level=1] [ref=e24]
+        - paragraph [ref=e25]: 420 Brooks Street, Wake Forest, NC 27587
+        - generic [ref=e26]:
+          - generic [ref=e27]:
+            - paragraph [ref=e28]: Latitude
+            - paragraph [ref=e29]: "35.979900"
+          - generic [ref=e30]:
+            - paragraph [ref=e31]: Longitude
+            - paragraph [ref=e32]: "-78.509700"
+          - generic [ref=e33]:
+            - paragraph [ref=e34]: Notes
+            - paragraph [ref=e35]: "1"
+          - generic [ref=e36]:
+            - paragraph [ref=e37]: Created
+            - paragraph [ref=e38]: Apr 10, 2026
+        - button "Marker" [ref=e40] [cursor=pointer]
+      - generic [ref=e41]:
+        - button "Features" [ref=e42]
+        - button "Similar" [ref=e43]
+        - button "Notes" [ref=e44]
+      - generic [ref=e104]:
+        - generic [ref=e105]:
+          - generic [ref=e106]:
+            - img [ref=e108]
+            - generic [ref=e110]:
+              - heading "Knowledge Graph Similarity" [level=3] [ref=e111]
+              - paragraph [ref=e112]: Discover related properties through shared neighborhoods, landmarks, amenities, and use types.
+          - button "Find Similar Properties" [ref=e114]:
+            - img [ref=e117]
+            - text: Find Similar Properties
+        - paragraph [ref=e120]: Overall, the similar properties cluster around office-oriented buildings in Midtown/Tech Corridor locations with downtown-style access to Central Station and the Convention Center. They also consistently share premium building amenities such as lobbies, gyms, rooftops, and in some cases security or mixed-use programming.
+        - generic [ref=e121]:
+          - heading "5 Similar Properties" [level=3] [ref=e123]
+          - generic [ref=e124]:
+            - 'link "Navy Yard Innovation 4747 South Broad Street, Philadelphia, PA 19112 This property resembles Wake Forest Town Center because both are office-oriented places with shared Midtown/Tech Corridor positioning and a similar amenity mix including a lobby, gym, and rooftop, plus proximity to Central Station and the Convention Center. neighborhood: Tech Corridor neighborhood: Midtown near: Central Station near: Convention Center amenity: rooftop amenity: lobby amenity: gym use type: office 100% similar" [ref=e125] [cursor=pointer]':
+              - /url: /properties/131
+              - generic [ref=e126]:
+                - generic [ref=e127]:
+                  - generic [ref=e128]: Navy Yard Innovation
+                  - paragraph [ref=e129]: 4747 South Broad Street, Philadelphia, PA 19112
+                  - paragraph [ref=e130]: This property resembles Wake Forest Town Center because both are office-oriented places with shared Midtown/Tech Corridor positioning and a similar amenity mix including a lobby, gym, and rooftop, plus proximity to Central Station and the Convention Center.
+                  - generic [ref=e131]:
+                    - generic [ref=e132]: "neighborhood: Tech Corridor"
+                    - generic [ref=e133]: "neighborhood: Midtown"
+                    - generic [ref=e134]: "near: Central Station"
+                    - generic [ref=e135]: "near: Convention Center"
+                    - generic [ref=e136]: "amenity: rooftop"
+                    - generic [ref=e137]: "amenity: lobby"
+                    - generic [ref=e138]: "amenity: gym"
+                    - generic [ref=e139]: "use type: office"
+                - generic [ref=e140]:
+                  - generic [ref=e141]: 100%
+                  - generic [ref=e142]: similar
+            - 'link "Willis Tower 233 South Wacker Drive, Chicago, IL 60606 This property resembles Wake Forest Town Center because it shares the same office use type and the same urban context of Midtown/Tech Corridor, with matching lobby, gym, and rooftop amenities near Central Station and the Convention Center. neighborhood: Midtown neighborhood: Tech Corridor near: Convention Center near: Central Station amenity: gym amenity: rooftop amenity: lobby use type: office 100% similar" [ref=e143] [cursor=pointer]':
+              - /url: /properties/31
+              - generic [ref=e144]:
+                - generic [ref=e145]:
+                  - generic [ref=e146]: Willis Tower
+                  - paragraph [ref=e147]: 233 South Wacker Drive, Chicago, IL 60606
+                  - paragraph [ref=e148]: This property resembles Wake Forest Town Center because it shares the same office use type and the same urban context of Midtown/Tech Corridor, with matching lobby, gym, and rooftop amenities near Central Station and the Convention Center.
+                  - generic [ref=e149]:
+                    - generic [ref=e150]: "neighborhood: Midtown"
+                    - generic [ref=e151]: "neighborhood: Tech Corridor"
+                    - generic [ref=e152]: "near: Convention Center"
+                    - generic [ref=e153]: "near: Central Station"
+                    - generic [ref=e154]: "amenity: gym"
+                    - generic [ref=e155]: "amenity: rooftop"
+                    - generic [ref=e156]: "amenity: lobby"
+                    - generic [ref=e157]: "use type: office"
+                - generic [ref=e158]:
+                  - generic [ref=e159]: 100%
+                  - generic [ref=e160]: similar
+            - 'link "Durham Bulls District 409 Blackwell Street, Durham, NC 27701 This property resembles Wake Forest Town Center because both are office properties tied to the Midtown/Tech Corridor setting and offer the same core amenities of a rooftop, gym, and lobby near Central Station and the Convention Center. neighborhood: Midtown neighborhood: Tech Corridor near: Convention Center near: Central Station amenity: rooftop amenity: gym amenity: lobby use type: office 100% similar" [ref=e161] [cursor=pointer]':
+              - /url: /properties/258
+              - generic [ref=e162]:
+                - generic [ref=e163]:
+                  - generic [ref=e164]: Durham Bulls District
+                  - paragraph [ref=e165]: 409 Blackwell Street, Durham, NC 27701
+                  - paragraph [ref=e166]: This property resembles Wake Forest Town Center because both are office properties tied to the Midtown/Tech Corridor setting and offer the same core amenities of a rooftop, gym, and lobby near Central Station and the Convention Center.
+                  - generic [ref=e167]:
+                    - generic [ref=e168]: "neighborhood: Midtown"
+                    - generic [ref=e169]: "neighborhood: Tech Corridor"
+                    - generic [ref=e170]: "near: Convention Center"
+                    - generic [ref=e171]: "near: Central Station"
+                    - generic [ref=e172]: "amenity: rooftop"
+                    - generic [ref=e173]: "amenity: gym"
+                    - generic [ref=e174]: "amenity: lobby"
+                    - generic [ref=e175]: "use type: office"
+                - generic [ref=e176]:
+                  - generic [ref=e177]: 100%
+                  - generic [ref=e178]: similar
+            - 'link "SouthPark Mall Area 4400 Sharon Road, Charlotte, NC 28211 This property resembles Wake Forest Town Center because it shares the office use type and Midtown/Tech Corridor location, along with lobby and gym amenities and nearby Central Station access, while also adding security and mixed-use characteristics. neighborhood: Midtown neighborhood: Tech Corridor near: Central Station amenity: security amenity: lobby amenity: gym use type: office use type: mixed-use 90% similar" [ref=e179] [cursor=pointer]':
+              - /url: /properties/221
+              - generic [ref=e180]:
+                - generic [ref=e181]:
+                  - generic [ref=e182]: SouthPark Mall Area
+                  - paragraph [ref=e183]: 4400 Sharon Road, Charlotte, NC 28211
+                  - paragraph [ref=e184]: This property resembles Wake Forest Town Center because it shares the office use type and Midtown/Tech Corridor location, along with lobby and gym amenities and nearby Central Station access, while also adding security and mixed-use characteristics.
+                  - generic [ref=e185]:
+                    - generic [ref=e186]: "neighborhood: Midtown"
+                    - generic [ref=e187]: "neighborhood: Tech Corridor"
+                    - generic [ref=e188]: "near: Central Station"
+                    - generic [ref=e189]: "amenity: security"
+                    - generic [ref=e190]: "amenity: lobby"
+                    - generic [ref=e191]: "amenity: gym"
+                    - generic [ref=e192]: "use type: office"
+                    - generic [ref=e193]: "use type: mixed-use"
+                - generic [ref=e194]:
+                  - generic [ref=e195]: 90%
+                  - generic [ref=e196]: similar
+            - 'link "Murray Retail Center 5900 South State Street, Murray, UT 84107 This property resembles Wake Forest Town Center because both are office properties in Midtown with shared access to Central Station and the Convention Center, and they offer the same kinds of building amenities including a lobby, rooftop, gym, and security. neighborhood: Midtown near: Convention Center near: Central Station amenity: lobby amenity: rooftop amenity: gym amenity: security use type: office 90% similar" [ref=e197] [cursor=pointer]':
+              - /url: /properties/245
+              - generic [ref=e198]:
+                - generic [ref=e199]:
+                  - generic [ref=e200]: Murray Retail Center
+                  - paragraph [ref=e201]: 5900 South State Street, Murray, UT 84107
+                  - paragraph [ref=e202]: This property resembles Wake Forest Town Center because both are office properties in Midtown with shared access to Central Station and the Convention Center, and they offer the same kinds of building amenities including a lobby, rooftop, gym, and security.
+                  - generic [ref=e203]:
+                    - generic [ref=e204]: "neighborhood: Midtown"
+                    - generic [ref=e205]: "near: Convention Center"
+                    - generic [ref=e206]: "near: Central Station"
+                    - generic [ref=e207]: "amenity: lobby"
+                    - generic [ref=e208]: "amenity: rooftop"
+                    - generic [ref=e209]: "amenity: gym"
+                    - generic [ref=e210]: "amenity: security"
+                    - generic [ref=e211]: "use type: office"
+                - generic [ref=e212]:
+                  - generic [ref=e213]: 90%
+                  - generic [ref=e214]: similar

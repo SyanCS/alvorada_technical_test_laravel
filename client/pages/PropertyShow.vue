@@ -80,79 +80,136 @@
         leave-to-class="opacity-0"
         mode="out-in"
       >
+        <!-- Features tab -->
+        <div v-if="activeTab === 'features'" key="features">
+          <FeatureCard :property-id="property.id" :features="property.features" @extracted="onFeaturesExtracted" />
+        </div>
+
         <!-- Notes tab -->
-        <div v-if="activeTab === 'notes'" key="notes" class="space-y-4">
+        <div v-else-if="activeTab === 'notes'" key="notes" class="space-y-4">
           <NoteForm :property-id="property.id" @added="onNoteAdded" />
           <NoteList :notes="notes" />
         </div>
 
-        <!-- Features tab -->
-        <div v-else-if="activeTab === 'features'" key="features">
-          <FeatureCard :property-id="property.id" :features="property.features" @extracted="onFeaturesExtracted" />
-        </div>
-
-      </Transition>
-
-      <!-- Similar Properties -->
-      <div class="mt-8">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Similar Properties</h2>
-          <button
-            @click="loadSimilar"
-            :disabled="store.loadingSimilar"
-            class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {{ store.loadingSimilar ? 'Finding...' : 'Find Similar' }}
-          </button>
-        </div>
-
-        <p v-if="similarSummary" class="mb-4 text-sm text-gray-600 dark:text-gray-400 italic">
-          {{ similarSummary }}
-        </p>
-
-        <div v-if="store.similarProperties.length > 0" class="space-y-3">
-          <div
-            v-for="prop in store.similarProperties"
-            :key="prop.property_id"
-            class="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-indigo-300 transition-colors"
-          >
-            <div class="flex items-start justify-between">
-              <div class="flex-1 min-w-0">
-                <router-link
-                  :to="`/properties/${prop.property_id}`"
-                  class="font-medium text-indigo-600 dark:text-indigo-400 hover:underline truncate block"
-                >
-                  {{ prop.property_name }}
-                </router-link>
-                <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{{ prop.address }}</p>
-                <p class="text-sm text-gray-700 dark:text-gray-300 mt-2">{{ prop.explanation }}</p>
-                <div v-if="prop.shared_concepts.length" class="flex flex-wrap gap-1 mt-2">
-                  <span
-                    v-for="concept in prop.shared_concepts"
-                    :key="concept"
-                    class="px-2 py-0.5 text-xs bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-full"
-                  >
-                    {{ concept }}
-                  </span>
-                </div>
+        <!-- Similar tab -->
+        <div v-else-if="activeTab === 'similar'" key="similar">
+          <!-- Header card -->
+          <div class="backdrop-blur-xl bg-white/70 dark:bg-gray-900/70 border border-white/20 rounded-2xl p-6 shadow-lg shadow-indigo-500/5 mb-4">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center shadow-md shadow-indigo-500/20">
+                <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
               </div>
-              <div class="ml-4 flex-shrink-0 text-center">
-                <div class="text-2xl font-bold" :class="scoreColor(prop.similarity_score)">
-                  {{ prop.similarity_score }}%
+              <div>
+                <h3 class="text-base font-bold text-gray-800 dark:text-white">Knowledge Graph Similarity</h3>
+                <p class="text-xs text-gray-400">Discover related properties through shared neighborhoods, landmarks, amenities, and use types.</p>
+              </div>
+            </div>
+            <div class="flex items-center justify-end">
+              <button
+                @click="loadSimilar"
+                :disabled="store.loadingSimilar"
+                class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:shadow-lg hover:shadow-indigo-500/25 transition-all duration-300 ease-in-out hover:scale-[1.02] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
+              >
+                <svg v-if="store.loadingSimilar" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" /><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
+                <svg v-else class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                {{ store.loadingSimilar ? 'Searching...' : 'Find Similar Properties' }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Pipeline progress -->
+          <div v-if="store.loadingSimilar && store.similarPipelineNodes.length" class="backdrop-blur-xl bg-white/70 border border-white/20 rounded-2xl p-5 shadow-lg shadow-indigo-500/5 mb-4">
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-4">Similarity Pipeline</h3>
+            <div class="space-y-0">
+              <div
+                v-for="(node, i) in store.similarPipelineNodes"
+                :key="node.id"
+                class="relative flex items-start gap-3 pb-5 last:pb-0"
+              >
+                <div v-if="i < store.similarPipelineNodes.length - 1" class="absolute left-[13px] top-[28px] w-0.5 h-[calc(100%-16px)]" :class="isNodeCompleted(node.id) ? 'bg-indigo-300' : 'bg-gray-200'"></div>
+                <div class="relative z-10 flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-500"
+                  :class="{
+                    'bg-indigo-500 text-white shadow-lg shadow-indigo-500/30': isNodeCompleted(node.id),
+                    'bg-indigo-400 text-white shadow-lg shadow-indigo-400/40 animate-pulse': store.similarCurrentNode === node.id && !isNodeCompleted(node.id),
+                    'bg-gray-200 text-gray-400': store.similarCurrentNode !== node.id && !isNodeCompleted(node.id),
+                  }"
+                >
+                  <svg v-if="isNodeCompleted(node.id)" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                  <svg v-else-if="store.similarCurrentNode === node.id" class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" /><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
+                  <span v-else class="text-xs font-bold">{{ i + 1 }}</span>
                 </div>
-                <div class="text-xs text-gray-400">similar</div>
+                <div class="pt-0.5">
+                  <p class="text-sm font-semibold transition-colors duration-300"
+                    :class="{
+                      'text-indigo-700': isNodeCompleted(node.id),
+                      'text-indigo-500': store.similarCurrentNode === node.id && !isNodeCompleted(node.id),
+                      'text-gray-400': store.similarCurrentNode !== node.id && !isNodeCompleted(node.id),
+                    }"
+                  >{{ node.label }}</p>
+                </div>
               </div>
             </div>
           </div>
+
+          <!-- Summary -->
+          <div v-if="similarSummary" class="backdrop-blur-xl bg-indigo-50/50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800 rounded-xl p-4 mb-4">
+            <p class="text-sm text-indigo-700 dark:text-indigo-300 leading-relaxed italic">{{ similarSummary }}</p>
+          </div>
+
+          <!-- Results -->
+          <div v-if="store.similarProperties.length > 0">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-400">{{ store.similarProperties.length }} Similar Properties</h3>
+            </div>
+            <div class="space-y-3">
+            <router-link
+              v-for="prop in store.similarProperties"
+              :key="prop.property_id"
+              :to="`/properties/${prop.property_id}`"
+              class="block p-5 backdrop-blur-xl bg-white/70 dark:bg-gray-900/70 border border-white/20 rounded-2xl shadow-lg shadow-indigo-500/5 hover:shadow-xl hover:scale-[1.01] transition-all duration-300 ease-in-out no-underline"
+            >
+              <div class="flex items-start justify-between">
+                <div class="flex-1 min-w-0">
+                  <span class="font-medium text-indigo-600 dark:text-indigo-400 truncate block">
+                    {{ prop.property_name }}
+                  </span>
+                  <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{{ prop.address }}</p>
+                  <p class="text-sm text-gray-700 dark:text-gray-300 mt-2">{{ prop.explanation }}</p>
+                  <div v-if="prop.shared_concepts && prop.shared_concepts.length" class="flex flex-wrap gap-1 mt-2">
+                    <span
+                      v-for="concept in prop.shared_concepts"
+                      :key="concept"
+                      class="px-2 py-0.5 text-xs bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-full"
+                    >
+                      {{ concept }}
+                    </span>
+                  </div>
+                </div>
+                <div class="ml-4 flex-shrink-0 text-center">
+                  <div class="text-2xl font-bold" :class="scoreColor(prop.similarity_score)">
+                    {{ prop.similarity_score }}%
+                  </div>
+                  <div class="text-xs text-gray-400">similar</div>
+                </div>
+              </div>
+            </router-link>
+            </div>
+          </div>
+
+          <!-- Empty state -->
+          <div
+            v-else-if="!store.loadingSimilar && similarSearched"
+            class="backdrop-blur-xl bg-white/70 dark:bg-gray-900/70 border border-white/20 rounded-2xl p-8 shadow-lg text-center"
+          >
+            <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+              <svg class="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+            </div>
+            <p class="text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">No similar properties found</p>
+            <p class="text-xs text-gray-400">Make sure Neo4j is seeded with <code class="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded text-indigo-600 dark:text-indigo-400">npm run neo4j:seed</code></p>
+          </div>
         </div>
 
-        <p
-          v-else-if="!store.loadingSimilar && similarSearched"
-          class="text-sm text-gray-500 dark:text-gray-400"
-        >
-          No similar properties found. Try running <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded">npm run extract-entities</code> in the ai-service to populate the knowledge graph.
-        </p>
-      </div>
+      </Transition>
     </template>
   </div>
 </template>
@@ -170,17 +227,22 @@ import FeatureCard from '../components/FeatureCard.vue';
 const route = useRoute();
 const store = usePropertyStore();
 
-const activeTab = ref('notes');
+const activeTab = ref('features');
 const miniMapEl = ref(null);
 let miniMap = null;
 
 const tabs = [
-  { id: 'notes', label: 'Notes' },
   { id: 'features', label: 'Features' },
+  { id: 'similar', label: 'Similar' },
+  { id: 'notes', label: 'Notes' },
 ];
 
 const property = computed(() => store.currentProperty);
 const notes = computed(() => property.value?.notes ?? []);
+
+function isNodeCompleted(nodeId) {
+  return store.similarCompletedNodes.indexOf(nodeId) !== -1;
+}
 
 function formatCoord(val) {
   if (val == null) return '-';

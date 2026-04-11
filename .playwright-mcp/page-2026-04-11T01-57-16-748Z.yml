@@ -1,0 +1,59 @@
+- generic [ref=e3]:
+  - navigation [ref=e4]:
+    - generic [ref=e6]:
+      - link "Alvorada" [ref=e7] [cursor=pointer]:
+        - /url: /
+        - img [ref=e9]
+        - generic [ref=e11]: Alvorada
+      - button "Toggle navigation" [ref=e12]:
+        - img [ref=e13]
+  - main [ref=e15]:
+    - generic [ref=e16]:
+      - generic [ref=e17]:
+        - heading "Property Scoring" [level=1] [ref=e18]
+        - paragraph [ref=e19]: Enter your client's requirements and our AI will score all properties from 0 to 10.
+        - generic [ref=e20]:
+          - paragraph [ref=e21]: Quick Examples
+          - generic [ref=e22]:
+            - button "Office space" [ref=e23]
+            - button "Retail storefront" [ref=e24]
+            - button "Warehouse" [ref=e25]
+            - button "Tech startup" [ref=e26]
+        - generic [ref=e27]:
+          - generic [ref=e28]: Client Requirements
+          - 'textbox "Example: Client is looking for an office near the subway, budget up to $50k/month, for 15-20 people, preferably in a central area with parking and modern amenities." [ref=e29]': I need a modern office space near subway
+        - generic [ref=e30]:
+          - generic [ref=e31]:
+            - generic [ref=e32]: Limit
+            - spinbutton [ref=e33]: "10"
+          - button "Scoring..." [disabled] [ref=e35]:
+            - img [ref=e36]
+            - text: Scoring...
+      - generic [ref=e39]:
+        - heading "LangGraph Pipeline" [level=2] [ref=e40]
+        - generic [ref=e41]:
+          - generic [ref=e42]:
+            - img [ref=e45]
+            - generic [ref=e47]:
+              - paragraph [ref=e48]: Parsing requirements
+              - paragraph [ref=e49]: parseRequirements
+          - generic [ref=e50]:
+            - img [ref=e53]
+            - generic [ref=e55]:
+              - paragraph [ref=e56]: Building ranking query
+              - paragraph [ref=e57]: buildRankingQuery
+          - generic [ref=e58]:
+            - img [ref=e61]
+            - generic [ref=e63]:
+              - paragraph [ref=e64]: Validating query
+              - paragraph [ref=e65]: validateQuery
+          - generic [ref=e66]:
+            - img [ref=e69]
+            - generic [ref=e71]:
+              - paragraph [ref=e72]: Ranking properties
+              - paragraph [ref=e73]: executeRanking
+          - generic [ref=e74]:
+            - img [ref=e76]
+            - generic [ref=e79]:
+              - paragraph [ref=e80]: Generating scores & response
+              - paragraph [ref=e81]: generateResponse

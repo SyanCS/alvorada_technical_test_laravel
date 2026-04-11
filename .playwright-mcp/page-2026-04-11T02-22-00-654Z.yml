@@ -1,0 +1,87 @@
+- generic [ref=e3]:
+  - navigation [ref=e4]:
+    - generic [ref=e6]:
+      - link "Alvorada" [ref=e7] [cursor=pointer]:
+        - /url: /
+        - img [ref=e9]
+        - generic [ref=e11]: Alvorada
+      - button "Toggle navigation" [ref=e12]:
+        - img [ref=e13]
+  - main [ref=e15]:
+    - generic [ref=e16]:
+      - link "Back to Properties" [ref=e17] [cursor=pointer]:
+        - /url: /
+        - img [ref=e18]
+        - text: Back to Properties
+      - generic [ref=e23]:
+        - heading "Wake Forest Town Center" [level=1] [ref=e24]
+        - paragraph [ref=e25]: 420 Brooks Street, Wake Forest, NC 27587
+        - generic [ref=e26]:
+          - generic [ref=e27]:
+            - paragraph [ref=e28]: Latitude
+            - paragraph [ref=e29]: "35.979900"
+          - generic [ref=e30]:
+            - paragraph [ref=e31]: Longitude
+            - paragraph [ref=e32]: "-78.509700"
+          - generic [ref=e33]:
+            - paragraph [ref=e34]: Notes
+            - paragraph [ref=e35]: "1"
+          - generic [ref=e36]:
+            - paragraph [ref=e37]: Created
+            - paragraph [ref=e38]: Apr 10, 2026
+        - button "Marker" [ref=e40] [cursor=pointer]
+      - generic [ref=e41]:
+        - button "Features" [ref=e42]
+        - button "Similar" [ref=e43]
+        - button "Notes" [ref=e44]
+      - generic [ref=e46]:
+        - generic [ref=e47]:
+          - heading "AI-Extracted Features" [level=3] [ref=e48]:
+            - img [ref=e49]
+            - text: AI-Extracted Features
+          - button "Re-extract" [ref=e51]
+        - generic [ref=e52]:
+          - generic [ref=e53]:
+            - generic [ref=e54]:
+              - paragraph [ref=e55]: Near Subway
+              - paragraph [ref=e56]:
+                - img [ref=e58]
+                - text: "Yes"
+            - generic [ref=e60]:
+              - paragraph [ref=e61]: Parking
+              - paragraph [ref=e62]:
+                - img [ref=e64]
+                - text: "Yes"
+            - generic [ref=e66]:
+              - paragraph [ref=e67]: Elevator
+              - paragraph [ref=e68]:
+                - img [ref=e70]
+                - text: "Yes"
+            - generic [ref=e72]:
+              - paragraph [ref=e73]: Needs Renovation
+              - paragraph [ref=e74]:
+                - img [ref=e76]
+                - text: "No"
+            - generic [ref=e78]:
+              - paragraph [ref=e79]: Capacity
+              - paragraph [ref=e80]: 500 people
+            - generic [ref=e81]:
+              - paragraph [ref=e82]: Floor Level
+              - paragraph [ref=e83]: Floor 15
+            - generic [ref=e84]:
+              - paragraph [ref=e85]: Condition
+              - paragraph [ref=e86]: 5/5
+            - generic [ref=e87]:
+              - paragraph [ref=e88]: Best For
+              - paragraph [ref=e89]: Office
+          - generic [ref=e90]:
+            - paragraph [ref=e91]: Amenities
+            - generic [ref=e92]:
+              - generic [ref=e93]: Lobby
+              - generic [ref=e94]: Security
+              - generic [ref=e95]: Gym
+              - generic [ref=e96]: Rooftop
+              - generic [ref=e97]: Conference-rooms
+          - generic [ref=e99]:
+            - generic [ref=e100]: AI Confidence
+            - generic [ref=e101]: 97%

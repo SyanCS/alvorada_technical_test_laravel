@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "concurrently -n api,vite -c blue,green \"node --env-file .env --watch --import tsx src/index.ts\" \"vite\"",
+    "dev": "concurrently -n api,vite -c blue,green \"PORT=3001 node --env-file .env --watch --import tsx src/index.ts\" \"vite\"",
     "dev:api": "node --env-file .env --watch --import tsx src/index.ts",
     "dev:vite": "vite",
     "build": "vite build",

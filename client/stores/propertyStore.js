@@ -133,19 +133,77 @@ export const usePropertyStore = defineStore('property', () => {
 
     const similarProperties = ref([]);
     const loadingSimilar = ref(false);
+    const similarPipelineNodes = ref([]);
+    const similarCompletedNodes = ref([]);
+    const similarCurrentNode = ref(null);
 
     async function findSimilar(propertyId, limit = 5) {
         loadingSimilar.value = true;
         similarProperties.value = [];
+        similarPipelineNodes.value = [];
+        similarCompletedNodes.value = [];
+        similarCurrentNode.value = null;
+        let result = null;
+
         try {
-            const { data } = await api.post('/ai/similar', { property_id: propertyId, limit });
-            similarProperties.value = data.data?.similar_properties ?? [];
-            return data.data;
+            const response = await fetch('/api/ai/similar/stream', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ property_id: propertyId, limit }),
+            });
+
+            if (!response.ok) {
+                const text = await response.text();
+                throw new Error(text || `HTTP ${response.status}`);
+            }
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let buffer = '';
+            let eventType = null;
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split('\n');
+                buffer = lines.pop() || '';
+
+                for (const line of lines) {
+                    if (line.startsWith('event: ')) {
+                        eventType = line.slice(7).trim();
+                    } else if (line.startsWith('data: ') && eventType) {
+                        const data = JSON.parse(line.slice(6));
+
+                        if (eventType === 'nodes') {
+                            similarPipelineNodes.value = data;
+                            if (data.length > 0) similarCurrentNode.value = data[0].id;
+                        } else if (eventType === 'node_complete') {
+                            similarCompletedNodes.value.push(data.node);
+                            const next = similarPipelineNodes.value.find(
+                                (n) => !similarCompletedNodes.value.includes(n.id),
+                            );
+                            similarCurrentNode.value = next?.id || null;
+                        } else if (eventType === 'result') {
+                            similarProperties.value = data.similar_properties ?? [];
+                            result = data;
+                        } else if (eventType === 'error') {
+                            error.value = data.message || 'Unknown error';
+                        }
+
+                        eventType = null;
+                    }
+                }
+            }
+
+            return result;
         } catch (err) {
             error.value = err.response?.data?.message || err.message;
             throw err;
         } finally {
             loadingSimilar.value = false;
+            similarCurrentNode.value = null;
         }
     }
 
@@ -165,6 +223,9 @@ export const usePropertyStore = defineStore('property', () => {
         fetchFeatures,
         similarProperties,
         loadingSimilar,
+        similarPipelineNodes,
+        similarCompletedNodes,
+        similarCurrentNode,
         findSimilar,
     };
 });

@@ -1,0 +1,144 @@
+- generic [ref=e3]:
+  - navigation [ref=e4]:
+    - generic [ref=e6]:
+      - link "Alvorada" [ref=e7] [cursor=pointer]:
+        - /url: /
+        - img [ref=e9]
+        - generic [ref=e11]: Alvorada
+      - button "Toggle navigation" [ref=e12]:
+        - img [ref=e13]
+  - main [ref=e15]:
+    - generic [ref=e16]:
+      - generic [ref=e17]:
+        - heading "Property Scoring" [level=1] [ref=e18]
+        - paragraph [ref=e19]: Enter your client's requirements and our AI will score all properties from 0 to 10.
+        - generic [ref=e20]:
+          - paragraph [ref=e21]: Quick Examples
+          - generic [ref=e22]:
+            - button "Office space" [ref=e23]
+            - button "Retail storefront" [ref=e24]
+            - button "Warehouse" [ref=e25]
+            - button "Tech startup" [ref=e26]
+        - generic [ref=e27]:
+          - generic [ref=e28]: Client Requirements
+          - 'textbox "Example: Client is looking for an office near the subway, budget up to $50k/month, for 15-20 people, preferably in a central area with parking and modern amenities." [ref=e29]': I need a modern office space near subway
+        - generic [ref=e30]:
+          - generic [ref=e31]:
+            - generic [ref=e32]: Limit
+            - spinbutton [ref=e33]: "3"
+          - button "Score All Properties" [ref=e34]
+          - button "Clear" [ref=e35]
+      - generic [ref=e36]:
+        - heading "Scored Properties" [level=2] [ref=e37]
+        - generic [ref=e38]:
+          - generic [ref=e39]: 3 properties scored
+          - generic [ref=e40]: 5.3s
+      - generic [ref=e41]:
+        - generic [ref=e42]:
+          - generic [ref=e43]:
+            - generic [ref=e44]:
+              - heading "#1 Wake Forest Town Center" [level=3] [ref=e45]
+              - paragraph [ref=e46]: 420 Brooks Street, Wake Forest, NC 27587
+            - generic [ref=e47]:
+              - generic [ref=e48]: "9"
+              - generic [ref=e49]: / 10
+          - paragraph [ref=e51]: This is the strongest fit because it is office-suitable, modern, near subway, and includes parking and elevator access. Its condition rating is high, so it aligns well with the client’s need for a modern office space.
+          - generic [ref=e52]:
+            - generic [ref=e53]:
+              - heading "Strengths" [level=4] [ref=e54]
+              - list [ref=e55]:
+                - listitem [ref=e56]:
+                  - img [ref=e57]
+                  - text: Near subway
+                - listitem [ref=e59]:
+                  - img [ref=e60]
+                  - text: Parking available
+                - listitem [ref=e62]:
+                  - img [ref=e63]
+                  - text: Has elevator
+                - listitem [ref=e65]:
+                  - img [ref=e66]
+                  - text: Condition rating 5
+                - listitem [ref=e68]:
+                  - img [ref=e69]
+                  - text: Recommended for office
+            - generic [ref=e71]:
+              - heading "Weaknesses" [level=4] [ref=e72]
+              - list [ref=e73]:
+                - listitem [ref=e74]:
+                  - img [ref=e75]
+                  - text: No clearly stated renovation need, though that's not a requirement
+                - listitem [ref=e77]:
+                  - img [ref=e78]
+                  - text: Location may be less central depending on the client's target market
+        - generic [ref=e80]:
+          - generic [ref=e81]:
+            - generic [ref=e82]:
+              - heading "#2 Cary Town Center" [level=3] [ref=e83]
+              - paragraph [ref=e84]: 1105 Walnut Street, Cary, NC 27511
+            - generic [ref=e85]:
+              - generic [ref=e86]: "7.5"
+              - generic [ref=e87]: / 10
+          - paragraph [ref=e89]: This is also a strong office option with modern condition, subway proximity, and elevator access. It is weaker than the top choice because it lacks parking, which may matter for staff and visitors.
+          - generic [ref=e90]:
+            - generic [ref=e91]:
+              - heading "Strengths" [level=4] [ref=e92]
+              - list [ref=e93]:
+                - listitem [ref=e94]:
+                  - img [ref=e95]
+                  - text: Near subway
+                - listitem [ref=e97]:
+                  - img [ref=e98]
+                  - text: Has elevator
+                - listitem [ref=e100]:
+                  - img [ref=e101]
+                  - text: Condition rating 5
+                - listitem [ref=e103]:
+                  - img [ref=e104]
+                  - text: Recommended for office
+            - generic [ref=e106]:
+              - heading "Weaknesses" [level=4] [ref=e107]
+              - list [ref=e108]:
+                - listitem [ref=e109]:
+                  - img [ref=e110]
+                  - text: No parking available
+                - listitem [ref=e112]:
+                  - img [ref=e113]
+                  - text: Near subway only partially addresses access if parking is important
+        - generic [ref=e115]:
+          - generic [ref=e116]:
+            - generic [ref=e117]:
+              - heading "#3 Clintonville Hub" [level=3] [ref=e118]
+              - paragraph [ref=e119]: 3417 North High Street, Columbus, OH 43202
+            - generic [ref=e120]:
+              - generic [ref=e121]: "4.5"
+              - generic [ref=e122]: / 10
+          - paragraph [ref=e124]: This property works as an office space and has parking plus elevator access, but it does not appear to be near subway. Its condition rating meets the minimum threshold, but overall it is a weaker match for the client’s transit preference.
+          - generic [ref=e125]:
+            - generic [ref=e126]:
+              - heading "Strengths" [level=4] [ref=e127]
+              - list [ref=e128]:
+                - listitem [ref=e129]:
+                  - img [ref=e130]
+                  - text: Recommended for office
+                - listitem [ref=e132]:
+                  - img [ref=e133]
+                  - text: Parking available
+                - listitem [ref=e135]:
+                  - img [ref=e136]
+                  - text: Has elevator
+                - listitem [ref=e138]:
+                  - img [ref=e139]
+                  - text: Condition rating 4
+            - generic [ref=e141]:
+              - heading "Weaknesses" [level=4] [ref=e142]
+              - list [ref=e143]:
+                - listitem [ref=e144]:
+                  - img [ref=e145]
+                  - text: Not near subway
+                - listitem [ref=e147]:
+                  - img [ref=e148]
+                  - text: Only minimum condition rating
+                - listitem [ref=e150]:
+                  - img [ref=e151]
+                  - text: Does not clearly stand out as modern

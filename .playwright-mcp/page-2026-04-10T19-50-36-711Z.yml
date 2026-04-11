@@ -1,0 +1,88 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - navigation [ref=e4]:
+      - generic [ref=e6]:
+        - link "Alvorada" [ref=e7] [cursor=pointer]:
+          - /url: /
+          - img [ref=e9]
+          - generic [ref=e11]: Alvorada
+        - generic [ref=e12]:
+          - link "Properties" [ref=e13] [cursor=pointer]:
+            - /url: /
+            - generic [ref=e14]:
+              - img [ref=e15]
+              - text: Properties
+          - link "Map" [ref=e17] [cursor=pointer]:
+            - /url: /map
+            - generic [ref=e18]:
+              - img [ref=e19]
+              - text: Map
+          - link "Scoring" [ref=e21] [cursor=pointer]:
+            - /url: /scoring
+            - generic [ref=e22]:
+              - img [ref=e23]
+              - text: Scoring
+    - main [ref=e25]:
+      - generic [ref=e26]:
+        - link "Back to Properties" [ref=e27] [cursor=pointer]:
+          - /url: /
+          - img [ref=e28]
+          - text: Back to Properties
+        - generic [ref=e30]:
+          - heading "Upper Arlington Office" [level=1] [ref=e31]
+          - paragraph [ref=e32]: 1945 Northwest Boulevard, Columbus, OH 43212
+          - generic [ref=e33]:
+            - generic [ref=e34]:
+              - paragraph [ref=e35]: Latitude
+              - paragraph [ref=e36]: "39.985900"
+            - generic [ref=e37]:
+              - paragraph [ref=e38]: Longitude
+              - paragraph [ref=e39]: "-83.063300"
+            - generic [ref=e40]:
+              - paragraph [ref=e41]: Notes
+              - paragraph [ref=e42]: "2"
+            - generic [ref=e43]:
+              - paragraph [ref=e44]: Created
+              - paragraph [ref=e45]: Apr 6, 2026
+          - button "Marker" [ref=e47] [cursor=pointer]
+        - generic [ref=e48]:
+          - button "Notes" [ref=e49]
+          - button "Features" [ref=e50]
+        - generic [ref=e104]:
+          - generic [ref=e105]:
+            - heading "AI-Extracted Features" [level=3] [ref=e106]:
+              - img [ref=e107]
+              - text: AI-Extracted Features
+            - button "Re-extract" [ref=e109]
+          - generic [ref=e138]:
+            - generic [ref=e139]:
+              - generic [ref=e140]:
+                - paragraph [ref=e141]: Near Subway
+                - paragraph [ref=e142]:
+                  - img [ref=e144]
+                  - text: "Yes"
+              - generic [ref=e146]:
+                - paragraph [ref=e147]: Elevator
+                - paragraph [ref=e148]:
+                  - img [ref=e150]
+                  - text: "Yes"
+              - generic [ref=e152]:
+                - paragraph [ref=e153]: Condition
+                - paragraph [ref=e154]: 3/5
+              - generic [ref=e155]:
+                - paragraph [ref=e156]: Best For
+                - paragraph [ref=e157]: Office
+            - generic [ref=e158]:
+              - paragraph [ref=e159]: Amenities
+              - generic [ref=e160]:
+                - generic [ref=e161]: ADA compliant
+                - generic [ref=e162]: Elevator
+            - generic [ref=e164]:
+              - generic [ref=e165]: AI Confidence
+              - generic [ref=e166]: 92%
+        - generic [ref=e65]:
+          - heading "Similar Properties" [level=2] [ref=e66]
+          - button "Find Similar" [ref=e67]
+  - generic [ref=e170] [cursor=pointer]:
+    - img [ref=e172]
+    - paragraph [ref=e174]: Features extracted successfully!

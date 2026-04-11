@@ -1,0 +1,30 @@
+- generic [ref=e3]:
+  - navigation [ref=e4]:
+    - generic [ref=e6]:
+      - link "Alvorada" [ref=e7] [cursor=pointer]:
+        - /url: /
+        - img [ref=e9]
+        - generic [ref=e11]: Alvorada
+      - generic [ref=e12]:
+        - link "Properties" [ref=e13] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e14]:
+            - img [ref=e15]
+            - text: Properties
+        - link "Map" [ref=e17] [cursor=pointer]:
+          - /url: /map
+          - generic [ref=e18]:
+            - img [ref=e19]
+            - text: Map
+        - link "Scoring" [ref=e21] [cursor=pointer]:
+          - /url: /scoring
+          - generic [ref=e22]:
+            - img [ref=e23]
+            - text: Scoring
+  - main [ref=e25]:
+    - generic [ref=e26]:
+      - link "Back to Properties" [ref=e27] [cursor=pointer]:
+        - /url: /
+        - img [ref=e28]
+        - text: Back to Properties
+      - paragraph [ref=e32]: Loading property...

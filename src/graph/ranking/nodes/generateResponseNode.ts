@@ -40,6 +40,8 @@ export function createGenerateResponseNode(llm: ChatOpenAI) {
           features: c.property.property_feature,
         }));
 
+      console.log(`[generateResponse] candidates to score: ${candidates.length}`);
+
       const userPrompt = `Client requirements: "${state.requirements}"
 
 Query explanation: ${state.rankingQuery?.explanation ?? "no criteria"}
@@ -51,6 +53,8 @@ ${JSON.stringify(candidates, null, 2)}`;
         new SystemMessage(SYSTEM_PROMPT),
         new HumanMessage(userPrompt),
       ]);
+
+      console.log(`[generateResponse] LLM returned ${out.scored_properties.length} scored, answer length: ${out.answer.length}`);
 
       // Reattach lat/lng from candidate data (LLM sets them to null)
       const scored = out.scored_properties.map((sp) => {

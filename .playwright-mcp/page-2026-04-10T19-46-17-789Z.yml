@@ -1,0 +1,42 @@
+- generic [ref=e3]:
+  - navigation [ref=e4]:
+    - generic [ref=e6]:
+      - link "Alvorada" [ref=e7] [cursor=pointer]:
+        - /url: /
+        - img [ref=e9]
+        - generic [ref=e11]: Alvorada
+      - generic [ref=e12]:
+        - link "Properties" [ref=e13] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e14]:
+            - img [ref=e15]
+            - text: Properties
+        - link "Map" [ref=e17] [cursor=pointer]:
+          - /url: /map
+          - generic [ref=e18]:
+            - img [ref=e19]
+            - text: Map
+        - link "Scoring" [ref=e21] [cursor=pointer]:
+          - /url: /scoring
+          - generic [ref=e22]:
+            - img [ref=e23]
+            - text: Scoring
+  - main [ref=e25]:
+    - generic [ref=e27]:
+      - heading "Property Scoring" [level=1] [ref=e28]
+      - paragraph [ref=e29]: Enter your client's requirements and our AI will score all properties from 0 to 10.
+      - generic [ref=e30]:
+        - paragraph [ref=e31]: Quick Examples
+        - generic [ref=e32]:
+          - button "Office space" [ref=e33]
+          - button "Retail storefront" [ref=e34]
+          - button "Warehouse" [ref=e35]
+          - button "Tech startup" [ref=e36]
+      - generic [ref=e37]:
+        - generic [ref=e38]: Client Requirements
+        - 'textbox "Example: Client is looking for an office near the subway, budget up to $50k/month, for 15-20 people, preferably in a central area with parking and modern amenities." [ref=e39]'
+      - generic [ref=e40]:
+        - generic [ref=e41]:
+          - generic [ref=e42]: Limit
+          - spinbutton [ref=e43]: "10"
+        - button "Score All Properties" [disabled] [ref=e44]

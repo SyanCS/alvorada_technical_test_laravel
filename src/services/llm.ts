@@ -9,7 +9,7 @@ export function createLlm(temperature = 0.2): ChatOpenAI {
     apiKey: config.openRouterApiKey,
     modelName: config.model,
     temperature,
-    maxTokens: 1200,
+    maxTokens: 4096,
     configuration: {
       baseURL: "https://openrouter.ai/api/v1",
       defaultHeaders: {

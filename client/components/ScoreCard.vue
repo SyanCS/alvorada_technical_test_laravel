@@ -1,5 +1,6 @@
 <template>
-  <div class="backdrop-blur-xl bg-white/70 dark:bg-gray-900/70 border border-white/20 rounded-2xl p-5 shadow-lg shadow-blue-500/5 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-[1.01]">
+  <router-link :to="`/properties/${result.property_id}`" class="block no-underline">
+  <div class="backdrop-blur-xl bg-white/70 dark:bg-gray-900/70 border border-white/20 rounded-2xl p-5 shadow-lg shadow-blue-500/5 transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-[1.01] cursor-pointer">
     <!-- Header: name + score circle -->
     <div class="flex items-start justify-between gap-4 mb-4">
       <div class="flex-1 min-w-0">
@@ -82,6 +83,7 @@
       </div>
     </div>
   </div>
+  </router-link>
 </template>
 
 <script setup>

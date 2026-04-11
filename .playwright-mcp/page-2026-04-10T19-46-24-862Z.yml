@@ -1,0 +1,43 @@
+- generic [ref=e3]:
+  - navigation [ref=e4]:
+    - generic [ref=e6]:
+      - link "Alvorada" [ref=e7] [cursor=pointer]:
+        - /url: /
+        - img [ref=e9]
+        - generic [ref=e11]: Alvorada
+      - generic [ref=e12]:
+        - link "Properties" [ref=e13] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e14]:
+            - img [ref=e15]
+            - text: Properties
+        - link "Map" [ref=e17] [cursor=pointer]:
+          - /url: /map
+          - generic [ref=e18]:
+            - img [ref=e19]
+            - text: Map
+        - link "Scoring" [ref=e21] [cursor=pointer]:
+          - /url: /scoring
+          - generic [ref=e22]:
+            - img [ref=e23]
+            - text: Scoring
+  - main [ref=e25]:
+    - generic [ref=e26]:
+      - link "Back to Properties" [ref=e27] [cursor=pointer]:
+        - /url: /
+        - img [ref=e28]
+        - text: Back to Properties
+      - generic [ref=e30]:
+        - heading "Add New Property" [level=2] [ref=e31]
+        - paragraph [ref=e32]: Enter the property details below. Coordinates will be geocoded automatically.
+        - generic [ref=e33]:
+          - generic [ref=e34]:
+            - generic [ref=e35]: Property Name
+            - textbox "Property Name" [ref=e36]:
+              - /placeholder: e.g., Downtown Office Building
+          - generic [ref=e37]:
+            - generic [ref=e38]: Address
+            - textbox "Address" [ref=e39]:
+              - /placeholder: e.g., 123 Main St, New York, NY 10001
+            - paragraph [ref=e40]: Be as specific as possible for better geocoding results.
+          - button "Add Property" [ref=e41]

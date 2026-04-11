@@ -1,0 +1,102 @@
+- generic [ref=e3]:
+  - navigation [ref=e4]:
+    - generic [ref=e6]:
+      - link "Alvorada" [ref=e7] [cursor=pointer]:
+        - /url: /
+        - img [ref=e9]
+        - generic [ref=e11]: Alvorada
+      - generic [ref=e12]:
+        - link "Properties" [ref=e13] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e14]:
+            - img [ref=e15]
+            - text: Properties
+        - link "Map" [ref=e17] [cursor=pointer]:
+          - /url: /map
+          - generic [ref=e18]:
+            - img [ref=e19]
+            - text: Map
+        - link "Scoring" [ref=e21] [cursor=pointer]:
+          - /url: /scoring
+          - generic [ref=e22]:
+            - img [ref=e23]
+            - text: Scoring
+  - main [ref=e25]:
+    - generic [ref=e26]:
+      - link "Back to Properties" [ref=e27] [cursor=pointer]:
+        - /url: /
+        - img [ref=e28]
+        - text: Back to Properties
+      - generic [ref=e33]:
+        - heading "Empire State Building" [level=1] [ref=e34]
+        - paragraph [ref=e35]: 350 Fifth Avenue, New York, NY 10118
+        - generic [ref=e36]:
+          - generic [ref=e37]:
+            - paragraph [ref=e38]: Latitude
+            - paragraph [ref=e39]: "40.748400"
+          - generic [ref=e40]:
+            - paragraph [ref=e41]: Longitude
+            - paragraph [ref=e42]: "-73.985700"
+          - generic [ref=e43]:
+            - paragraph [ref=e44]: Notes
+            - paragraph [ref=e45]: "2"
+          - generic [ref=e46]:
+            - paragraph [ref=e47]: Created
+            - paragraph [ref=e48]: Apr 6, 2026
+        - button "Marker" [ref=e50] [cursor=pointer]
+      - generic [ref=e51]:
+        - button "Notes" [ref=e52]
+        - button "Features" [active] [ref=e53]
+      - generic [ref=e72]:
+        - generic [ref=e73]:
+          - heading "AI-Extracted Features" [level=3] [ref=e74]:
+            - img [ref=e75]
+            - text: AI-Extracted Features
+          - button "Re-extract" [ref=e77]
+        - generic [ref=e78]:
+          - generic [ref=e79]:
+            - generic [ref=e80]:
+              - paragraph [ref=e81]: Near Subway
+              - paragraph [ref=e82]:
+                - img [ref=e84]
+                - text: "Yes"
+            - generic [ref=e86]:
+              - paragraph [ref=e87]: Parking
+              - paragraph [ref=e88]:
+                - img [ref=e90]
+                - text: "No"
+            - generic [ref=e92]:
+              - paragraph [ref=e93]: Elevator
+              - paragraph [ref=e94]:
+                - img [ref=e96]
+                - text: "Yes"
+            - generic [ref=e98]:
+              - paragraph [ref=e99]: Needs Renovation
+              - paragraph [ref=e100]:
+                - img [ref=e102]
+                - text: "No"
+            - generic [ref=e104]:
+              - paragraph [ref=e105]: Capacity
+              - paragraph [ref=e106]: 350 people
+            - generic [ref=e107]:
+              - paragraph [ref=e108]: Floor Level
+              - paragraph [ref=e109]: Floor 22
+            - generic [ref=e110]:
+              - paragraph [ref=e111]: Condition
+              - paragraph [ref=e112]: 5/5
+            - generic [ref=e113]:
+              - paragraph [ref=e114]: Best For
+              - paragraph [ref=e115]: Office
+          - generic [ref=e116]:
+            - paragraph [ref=e117]: Amenities
+            - generic [ref=e118]:
+              - generic [ref=e119]: Lobby
+              - generic [ref=e120]: Security
+              - generic [ref=e121]: Conference-rooms
+              - generic [ref=e122]: Gym
+          - generic [ref=e124]:
+            - generic [ref=e125]: AI Confidence
+            - generic [ref=e126]: 95%
+      - generic [ref=e68]:
+        - heading "Similar Properties" [level=2] [ref=e69]
+        - button "Find Similar" [ref=e70]

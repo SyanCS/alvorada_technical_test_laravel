@@ -22,6 +22,7 @@ export function createParseRequirementsNode(llm: ChatOpenAI) {
           (cleaned as Record<string, unknown>)[k] = v;
         }
       }
+      console.log(`[parseRequirements] criteria:`, JSON.stringify(cleaned));
       return { criteria: cleaned as typeof criteria, error: undefined };
     } catch (e) {
       return { error: `parseRequirements: ${e instanceof Error ? e.message : String(e)}` };

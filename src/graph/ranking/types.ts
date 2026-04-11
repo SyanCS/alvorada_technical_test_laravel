@@ -34,8 +34,8 @@ export const PropertyDataSchema = z.object({
   id: z.number(),
   name: z.string(),
   address: z.string(),
-  latitude: z.number().nullable().optional(),
-  longitude: z.number().nullable().optional(),
+  latitude: z.coerce.number().nullable().optional(),
+  longitude: z.coerce.number().nullable().optional(),
   notes: z.array(z.object({ id: z.number(), note: z.string() })).optional(),
   property_feature: z.record(z.unknown()).nullable().optional(),
 });

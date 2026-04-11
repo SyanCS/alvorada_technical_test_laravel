@@ -32,6 +32,9 @@ export function createBuildRankingQueryNode() {
       parts.push(`preferences: ${Object.keys(preferences).join(", ")}`);
     }
 
+    console.log(`[buildRankingQuery] filters:`, JSON.stringify(filters));
+    console.log(`[buildRankingQuery] preferences:`, JSON.stringify(preferences));
+
     return {
       rankingQuery: {
         filters,
