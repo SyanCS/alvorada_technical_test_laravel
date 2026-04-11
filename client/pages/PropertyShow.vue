@@ -303,12 +303,30 @@ function scoreColor(score) {
   return 'text-gray-500 dark:text-gray-400';
 }
 
+function resetSimilarState() {
+  similarSummary.value = '';
+  similarSearched.value = false;
+  store.similarProperties = [];
+  store.similarPipelineNodes = [];
+  store.similarCompletedNodes = [];
+  store.similarCurrentNode = null;
+}
+
 onMounted(loadProperty);
 
 onUnmounted(() => {
   if (miniMap) {
     miniMap.remove();
     miniMap = null;
+  }
+});
+
+// Reload property + reset tabs when navigating between properties
+watch(() => route.params.id, (newId, oldId) => {
+  if (newId && newId !== oldId) {
+    activeTab.value = 'features';
+    resetSimilarState();
+    loadProperty();
   }
 });
 
